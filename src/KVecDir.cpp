@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <cmath>
 #include <cassert>
-#include <iterator> // for distance()
 #include <map>
 #include <queue>
 #include "Utility.h"
@@ -179,38 +178,45 @@ namespace DDG{
     // (does not affect smallest eigenvector)
     const double shift = -lambda + 1e-9;
 
-    for( VertexIter vj  = vertices.begin(); vj != vertices.end(); ++vj ){
-      vector<ColumnEntry> Aj; // nonzeros in jth column of A
-      vector<ColumnEntry> Mj; // nonzeros in jth column of M
+    // temporary storage for matrix columns
+    vector< vector<ColumnEntry> > cA( nV ), cM( nV );
+
+    for( VertexIter vj  = vertices.begin(); vj != vertices.end(); ++vj )
+    {
+      size_t j = vj->id;
+
+      vector<ColumnEntry>& Aj( cA[j] ); // nonzeros in jth column of A
+      vector<ColumnEntry>& Mj( cM[j] ); // nonzeros in jth column of M
       Aj.reserve( 16 );
       Mj.reserve( 16 );
-
-      size_t j = distance( vertices.begin(), vj );
 
       Aj.push_back( ColumnEntry( j, Complex(vj->Es+shift*vj->m,0) ));
       Mj.push_back( ColumnEntry( j, Complex(vj->m,0) ));
 
       HalfEdgeCIter he = vj->he;
-      do{
-	EdgeCIter e = he->edge;
-	VertexIter vi = he->flip->vertex;
-	size_t i = distance( vertices.begin(), vi );
+      do {
+        EdgeCIter e = he->edge;
+        VertexIter vi = he->flip->vertex;
+        size_t i = vi->id;
 
-	Complex Aij = e->Es + shift*e->m;
-	Complex Mij = e->m;
-	if( he->edge->he == he ){
-	  Aij = Aij.conj();
-	  Mij = Mij.conj();
-	}
+        Complex Aij = e->Es + shift*e->m;
+        Complex Mij = e->m;
+        if( he->edge->he == he ){
+          Aij = Aij.conj();
+          Mij = Mij.conj();
+        }
 
-	Aj.push_back( ColumnEntry( i, Aij ));
-	Mj.push_back( ColumnEntry( i, Mij ));
+        Aj.push_back( ColumnEntry( i, Aij ));
+        Mj.push_back( ColumnEntry( i, Mij ));
 
-	he = he->flip->next;
-      }while( he != vj->he );
+        he = he->flip->next;
+      } while( he != vj->he );
+    }
 
-      A.appendCompressedColumn( Aj );
-      M.appendCompressedColumn( Mj );
+    for( int j = 0; j < nV; j++ )
+    {
+       A.appendCompressedColumn( cA[j] );
+       M.appendCompressedColumn( cM[j] );
     }
   }
 
@@ -234,7 +240,10 @@ namespace DDG{
     cerr << "[eig] ev = " << rayleighQuotient( A, M, u ) << endl;
 
     // load result
-    unsigned int i = 0; for( VertexIter vi = vertices.begin(); vi != vertices.end(); i++, vi++ ) vi->u = u(i,0);
+    for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ )
+    {
+       vi->u = u(vi->id,0);
+    }
 
     ComputeIndices( n );
 
@@ -269,7 +278,7 @@ namespace DDG{
     // load q; to simplify the t computation we need to normalize q
     unsigned int i = 0;
     for( VertexIter vi = vertices.begin(); vi != vertices.end(); i++, vi++ ){
-      q(i,0) = ( n == 2 ? vi->q : vi->q*vi->q );
+      q(vi->id,0) = ( n == 2 ? vi->q : vi->q*vi->q );
     }
     {
       u = M.multiply( q );
@@ -281,7 +290,7 @@ namespace DDG{
     solvePositiveDefinite( A, u, q );
 
     // load result
-    i = 0; for( VertexIter vi = vertices.begin(); vi != vertices.end(); i++, vi++ ) vi->u = u(i,0);
+    i = 0; for( VertexIter vi = vertices.begin(); vi != vertices.end(); i++, vi++ ) vi->u = u(vi->id,0);
 
     double normU = 0;
     {
