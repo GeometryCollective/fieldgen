@@ -2,6 +2,8 @@
 --------------------------------------------
 **authors:** Keenan Crane, Peter Schröder
 
+![fieldgen](icon.svg)
+
 ## About
 
 This code is an implementation of the paper
