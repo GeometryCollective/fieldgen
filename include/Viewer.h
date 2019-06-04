@@ -66,6 +66,7 @@ namespace DDG
          // menu functions
 	 static void mSmoothField( void );
 	 static void mToggleAlignment( void );
+	 static void mToggleFixedBoundary( void );
 	 static void mToggleHedgehog( void );
 	 static void mToggleNormalized( void );
          static void mResetMesh( void );
@@ -92,6 +93,7 @@ namespace DDG
             menuZoomOut,
             menuScreenshot,
             menuToggleAlignment,
+            menuToggleFixedBoundary,
             menuToggleNormalized,
             menuToggleHedgehog
          };
@@ -122,11 +124,12 @@ namespace DDG
          // shader used to determine appearance of surface
 
          // field parameters
-         static int fieldDegree; // degree k of k-field
-         static bool normalized; // whether to normalize vectors
-         static bool align;      // toggles alignment with curvature
-         static double t;        // amount of alignment
-         static double s;        // determines smoothness energy (between -1,1)
+         static int fieldDegree;  // degree k of k-field
+         static bool normalized;  // whether to normalize vectors
+         static bool align;       // toggles alignment with curvature
+         static bool fixBoundary; // toggles fixed boundary vectors (Dirichlet conditions)
+         static double t;         // amount of alignment
+         static double s;         // determines smoothness energy (between -1,1)
    };
 }
 

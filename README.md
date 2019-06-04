@@ -1,4 +1,4 @@
-# fieldgen v0.01
+# fieldgen v0.02
 --------------------------------------------
 **authors:** Keenan Crane, Peter Schröder
 
@@ -6,39 +6,45 @@
 
 ## About
 
-This code is an implementation of the paper
+This code is a reference implementation of the paper
 
    >Felix Knöppel, Keenan Crane, Ulrich Pinkall, Peter Schröder  
    _"Globally Optimal Direction Fields"_  
    SIGGRAPH 2013
 
-This version of the code carefully implements the finite element
-connection Laplacian as described in the paper, using Chebyshev
-expansions to ensure good numerics.  It also supports some
-sophisticated features, such as holomorphic/anti-holomorphic energy,
-and alignment with principal curvature directions.
+This version carefully implements the finite element connection Laplacian as
+described in the paper, using Chebyshev expansions to ensure good numerics.  It
+also supports some sophisticated features, such as holomorphic/anti-holomorphic
+energy, alignment with principal curvature directions, and alignment with the
+boundary.
 
-However, it is rather messy research code without an intuitive user
-interface.  Several nicer/easier-to-use implementations are available,
-which use a simpler version of the connection Laplacian and do not
-support some of the features mentioned above.  In particular:
+The code itself is somewhat messy research code with a very basic user
+interface.  Several other implementations are available, which use a less
+sophisticated discretization of the connection Laplacian and do not support
+some of the features mentioned above.  However, they may be useful for certain
+tasks, or in different build settings.  In particular:
 
-   - The "stripes" code provides a simple version of the algorithm,
+   - The `stripes` code provides a simple version of the algorithm,
      as well as editing of singularities and generation of a field-
      aligned parameterization:
 
        <http://www.cs.cmu.edu/~kmcrane/Projects/StripePatterns/code.zip>
 
-   - There is an implementaiton in "Directional", which is built on
+   - There is an implementaiton in _Directional_, which is built on
      top of libigl and Eigen, and is hence header-only:
 
        <https://github.com/avaxman/Directional>
 
-(Note that this code (fieldgen) and stripes are both built on top of
-the CHOLMOD sparse direct solver, whereas Directional is built on top
-of Eigen.  The latter is easier to install (since it is header only)
-but can be significantly slower, since the Eigen Cholseky solver is
-much less mature than CHOLMOD.)
+Note that `fieldgen` and stripes are both built on top of the CHOLMOD sparse
+direct solver, whereas Directional is built on top of Eigen.  The latter can be
+easier to install (since it is header only) but can be significantly slower,
+since the Eigen Cholseky solver is much less mature than CHOLMOD.  See also
+below for easy install instructions for CHOLMOD.
+
+### Version History
+
+* 0.01 (Sep 1, 2013) — Initial release
+* 0.02 (Jun 4, 2019) — Added boundary alignment
 
 ## Installation
 
@@ -82,6 +88,7 @@ Other commands can be accessed via the keyboard:
 |    `s/S` | adjust the smoothness energy; -1=holomorphic, 0=Dirichlet, 1=antiholomorphic
 |    `t/T` | adjust trade off between smoothness and curvature alignment (if enabled)
 |      `c` | toggle curvature alignment
+|      `b` | toggle boundary alignment
 |      `m` | draw smooth shaded
 |      `f` | draw faceted (with wireframe)
 |  `` ` `` | take a screenshot

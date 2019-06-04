@@ -26,6 +26,7 @@ namespace DDG
    int Viewer::fieldDegree = 1;
    bool Viewer::normalized = true;
    bool Viewer::align = false;
+   bool Viewer::fixBoundary = false;
    double Viewer::t = 0.;
    double Viewer::s = 0.;
    
@@ -76,13 +77,14 @@ namespace DDG
 
       int mainMenu = glutCreateMenu( Viewer::menu );
       glutSetMenu( mainMenu );
-      glutAddMenuEntry( "[u] Smooth Field",         menuSmoothField      );
-      glutAddMenuEntry( "[c] Toggle Curvature",     menuToggleAlignment  );
-      glutAddMenuEntry( "[n] Toggle Normalization", menuToggleNormalized );
-      glutAddMenuEntry( "[r] Reset Mesh",           menuResetMesh        );
-      glutAddMenuEntry( "[w] Write Mesh",           menuWriteMesh        );
-      glutAddMenuEntry( "[\\] Screenshot",          menuScreenshot       );
-      glutAddMenuEntry( "[esc] Exit",               menuExit             );
+      glutAddMenuEntry( "[u] Smooth Field",          menuSmoothField         );
+      glutAddMenuEntry( "[c] Toggle Curvature",      menuToggleAlignment     );
+      glutAddMenuEntry( "[b] Toggle Fixed Boundary", menuToggleFixedBoundary );
+      glutAddMenuEntry( "[n] Toggle Normalization",  menuToggleNormalized    );
+      glutAddMenuEntry( "[r] Reset Mesh",            menuResetMesh           );
+      glutAddMenuEntry( "[w] Write Mesh",            menuWriteMesh           );
+      glutAddMenuEntry( "[\\] Screenshot",           menuScreenshot          );
+      glutAddMenuEntry( "[esc] Exit",                menuExit                );
       glutAddSubMenu( "View", viewMenu );
       glutAttachMenu( GLUT_RIGHT_BUTTON );
    }
@@ -116,6 +118,9 @@ namespace DDG
             break;
          case( menuToggleAlignment ):
             mToggleAlignment();
+            break;
+         case( menuToggleFixedBoundary ):
+            mToggleFixedBoundary();
             break;
          case( menuToggleNormalized ):
             mToggleNormalized();
@@ -170,6 +175,10 @@ namespace DDG
       {
          mesh.SmoothestCurvatureAlignment( fieldDegree, s, t, normalized );
       }
+      else if( fixBoundary )
+      {
+         mesh.ComputeSmoothestFixedBoundary( fieldDegree, s, normalized );
+      }
       else
       {
          mesh.ComputeSmoothest( fieldDegree, s, normalized );
@@ -200,6 +209,11 @@ namespace DDG
    void Viewer :: mToggleAlignment( void )
    {
       align = !align;
+   }
+   
+   void Viewer :: mToggleFixedBoundary( void )
+   {
+      fixBoundary = !fixBoundary;
    }
    
    void Viewer :: mToggleNormalized( void )
@@ -292,6 +306,9 @@ namespace DDG
             break;
          case ' ':
 	    mSmoothField();
+	    break;
+         case 'b':
+	    mToggleFixedBoundary();
 	    break;
          case 'c':
 	    mToggleAlignment();
@@ -720,40 +737,56 @@ namespace DDG
       glTranslatef( 0., 0., -1. );
 
       glColor3f( 0., 0., 0. );
+
+      int h = 16;
+      int hInc = 14;
       
       // display field degree
       {
          stringstream ss;
          ss << "k: " << fieldDegree;
-         drawString( ss.str(), 16, H-16, alignLeft );
+         drawString( ss.str(), 16, H-h, alignLeft );
+         h += hInc;
       }
       
       // display curvature alignment
       {
          stringstream ss;
          ss << "curvature alignment: " << (align?"on":"off");
-         drawString( ss.str(), 16, H-30 );
+         drawString( ss.str(), 16, H-h );
+         h += hInc;
+      }
+      
+      // display boundary alignment
+      {
+         stringstream ss;
+         ss << "boundary alignment: " << (fixBoundary?"on":"off");
+         drawString( ss.str(), 16, H-h );
+         h += hInc;
       }
       
       // display field degree
       {
          stringstream ss;
          ss << "normalized: " << (normalized?"true":"false");
-         drawString( ss.str(), 16, H-44 );
+         drawString( ss.str(), 16, H-h );
+         h += hInc;
       }
 
       // display s
       {
          stringstream ss;
          ss << "s: " << s;
-         drawString( ss.str(), 16, H-58 );
+         drawString( ss.str(), 16, H-h );
+         h += hInc;
       }
 
       // display t
       {
          stringstream ss;
          ss << "t: " << t;
-         drawString( ss.str(), 16, H-70 );
+         drawString( ss.str(), 16, H-h );
+         h += hInc;
       }
 
       glMatrixMode( GL_PROJECTION ); glPopMatrix();

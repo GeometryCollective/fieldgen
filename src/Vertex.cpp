@@ -98,5 +98,11 @@ namespace DDG
 
      return AngleOfEdge( h )/2.;
   }
+
+  Complex Vertex::BoundaryValue( unsigned int n )
+  {
+     double theta = n * BoundaryNormalAngle();
+     return Complex( cos(theta), sin(theta) );
+  }
 }
 

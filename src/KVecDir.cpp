@@ -220,6 +220,77 @@ namespace DDG{
     }
   }
 
+  void Mesh::SetupEnergyMatrixFixedBoundary( SparseMatrix<Complex> &A,
+        			             SparseMatrix<Complex> &M,
+        			             DenseMatrix<Complex> &b,
+        			             const unsigned int n, const double s,
+                                             double lambda )
+  {
+    const unsigned int nV = nInteriorVertices;
+    const unsigned int nE = edges.size();
+    A.resize( nV, nV, nV+2*nE );
+    M.resize( nV, nV, nV+2*nE );
+    b = DenseMatrix<Complex>( nV, 1 );
+    b.zero( Complex(0.,0.) );
+
+    ComputeEnergyAndMass( n, s );
+     
+    // shift A by epsilon to avoid degeneracy
+    // (does not affect smallest eigenvector)
+    const double shift = -lambda + 1e-9;
+
+    // temporary storage for matrix columns
+    vector< vector<ColumnEntry> > cA( nV ), cM( nV );
+
+    for( VertexIter vj  = vertices.begin(); vj != vertices.end(); ++vj )
+    {
+       if( vj->onBoundary() ) continue;
+
+       size_t j = vj->id;
+
+       vector<ColumnEntry>& Aj( cA[j] ); // nonzeros in jth column of A
+       vector<ColumnEntry>& Mj( cM[j] ); // nonzeros in jth column of M
+       Aj.reserve( 16 );
+       Mj.reserve( 16 );
+
+       Aj.push_back( ColumnEntry( j, Complex(vj->Es+shift*vj->m,0) ));
+       Mj.push_back( ColumnEntry( j, Complex(vj->m,0) ));
+
+       HalfEdgeCIter he = vj->he;
+       do {
+          EdgeCIter e = he->edge;
+          VertexIter vi = he->flip->vertex;
+
+          Complex Aij = e->Es + shift*e->m;
+          Complex Mij = e->m;
+          if( he->edge->he == he ){
+             Aij = Aij.conj();
+             Mij = Mij.conj();
+          }
+
+          if( vi->onBoundary() )
+          {
+             // move boundary terms to the right-hand side
+             b(j,0) -= Aij.conj() * vi->BoundaryValue(n);
+          }
+          else
+          {
+             size_t i = vi->id;
+             Aj.push_back( ColumnEntry( i, Aij ));
+             Mj.push_back( ColumnEntry( i, Mij ));
+          }
+
+          he = he->flip->next;
+       } while( he != vj->he );
+    }
+
+    for( int j = 0; j < nV; j++ )
+    {
+       A.appendCompressedColumn( cA[j] );
+       M.appendCompressedColumn( cM[j] );
+    }
+  }
+
   // energy minimizer
   void Mesh::ComputeSmoothest( const unsigned int n, const double s, const bool dir ){
 
@@ -245,6 +316,50 @@ namespace DDG{
        vi->u = u(vi->id,0);
     }
 
+    ComputeIndices( n );
+
+    // take roots (and possibly normalize) vertex data
+    for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ ){
+      const Complex z = vi->u;
+      vi->u = Phase(z.arg()/n) * ( dir ? 1. : pow(z.norm(),1./n) );
+    }
+    double t1 = wallClock(); printTiming( "compute smoothest field", t1-t0 );
+    cerr << "triangles: " << faces.size() << endl;
+  } // ComputeSmoothest
+
+  void Mesh::ComputeSmoothestFixedBoundary( const unsigned int n, const double s, const bool dir ){
+
+    cerr << "Mesh::ComputeSmoothestFixedBoundary: n: " << n << " s: " << s << " dir: " << dir << endl;
+
+    double t0 = wallClock();
+
+    const unsigned int nv = nInteriorVertices;
+    SparseMatrix<Complex> A( nv, nv ), M( nv, nv );
+    DenseMatrix<Complex> b;
+
+    cout << "Build matrix" << endl;
+    SetupEnergyMatrixFixedBoundary( A, M, b, n, s );
+
+    cout << "Solve" << endl;
+    // solve for smoothest field
+    DenseMatrix<Complex> u(nv,1);
+    solvePositiveDefinite( A, u, b );
+
+    cerr << "Extract solution" << endl;
+    // load result
+    for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ )
+    {
+       if( !vi->onBoundary() ) // interior vertex
+       {
+          vi->u = u(vi->id,0);
+       }
+       else // boundary vertex
+       {
+          vi->u = vi->BoundaryValue(n);
+       }
+    }
+
+    cout << "Compute indices" << endl;
     ComputeIndices( n );
 
     // take roots (and possibly normalize) vertex data

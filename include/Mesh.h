@@ -94,6 +94,8 @@ namespace DDG
     // solves for the smoothest of degree n, energy parameter s,
     // direction? (or vector)
     void ComputeSmoothest( const unsigned int n, const double s, const bool dir );
+    // solves for smoothest field with boundary vectors fixed to boundary normals
+    void ComputeSmoothestFixedBoundary( const unsigned int n, const double s, const bool dir );
     // solver function when using alignment energy
     double SmoothestCurvatureAlignment( const unsigned int n, const double s,
 					const double lambda, const bool dir );
@@ -104,6 +106,9 @@ namespace DDG
     void ComputeEnergyAndMass( const unsigned int n, const double s );
     // loads the matrix (gets called by ComputeSmoothest)
     void SetupEnergyMatrix( SparseMatrix<DDG::Complex> &A, SparseMatrix<DDG::Complex> &M,
+			    const unsigned int n, const double s, double lambda = 0. );
+    // loads the matrix (gets called by ComputeSmoothestFixedBoundary)
+    void SetupEnergyMatrixFixedBoundary( SparseMatrix<DDG::Complex> &A, SparseMatrix<DDG::Complex> &M, DenseMatrix<DDG::Complex> &b,
 			    const unsigned int n, const double s, double lambda = 0. );
 
     // computes indices of all triangles (gets called by ComputeSmoothest)

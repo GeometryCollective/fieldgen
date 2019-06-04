@@ -87,6 +87,9 @@ namespace DDG
     // for a boundary vertex, return angle corresponding to the
     // (inward) vector orthogonal to the domain boundary
 
+    Complex BoundaryValue( unsigned int n );
+    // complex value corresponding to the boundary normal, for an n-direction field
+
     int id;
     // unique ID (used to index matrices)
   };
