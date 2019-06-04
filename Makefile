@@ -25,21 +25,27 @@ DDG_OPENGL_LIBS       = -framework OpenGL -framework GLUT
 
 #######################################################################################################
 
-TARGET = fieldgen
+TARGET = fieldviz
+CLTARGET = fieldgen
 CC = g++
 LD = g++
 CFLAGS = -g -Wall -Wno-deprecated -Werror -Wno-error=deprecated-declarations -ansi -pedantic  $(DDG_INCLUDE_PATH) -I./include -I./src
 LFLAGS = -g -Wall -Wno-deprecated -Werror -pedantic $(DDG_LIBRARY_PATH)
 LIBS = $(DDG_OPENGL_LIBS) $(DDG_SUITESPARSE_LIBS) $(DDG_BLAS_LIBS)
+CLLIBS = $(DDG_SUITESPARSE_LIBS) $(DDG_BLAS_LIBS)
 
 ## !! Do not edit below this line -- dependencies can be updated by running ./update ##################
 
 OBJS = obj/Camera.o obj/Complex.o obj/DenseMatrix.o obj/Edge.o obj/Face.o obj/HalfEdge.o obj/Image.o obj/KVecDir.o obj/LinearContext.o obj/Mesh.o obj/MeshIO.o obj/Quaternion.o obj/Real.o obj/SectionIntegrals.o obj/Shader.o obj/SparseMatrix.o obj/Vector.o obj/Vertex.o obj/Viewer.o obj/main.o
+CLOBJS = obj/Complex.o obj/DenseMatrix.o obj/Edge.o obj/Face.o obj/HalfEdge.o obj/KVecDir.o obj/LinearContext.o obj/Mesh.o obj/MeshIO.o obj/Quaternion.o obj/Real.o obj/SectionIntegrals.o obj/SparseMatrix.o obj/Vector.o obj/Vertex.o obj/commandline.o
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(LD) $(LFLAGS) $(OBJS) $(LIBS) -o $(TARGET)
+
+commandline: $(CLOBJS)
+	$(LD) $(LFLAGS) $(CLOBJS) $(CLLIBS) -o $(CLTARGET)
 
 obj/Camera.o: src/Camera.cpp include/Camera.h include/Quaternion.h include/Vector.h 
 	$(CC) $(CFLAGS) -c src/Camera.cpp -o obj/Camera.o
@@ -101,9 +107,15 @@ obj/Viewer.o: src/Viewer.cpp include/Viewer.h include/Mesh.h include/HalfEdge.h 
 obj/main.o: src/main.cpp include/Viewer.h include/Mesh.h include/HalfEdge.h include/Vector.h include/Types.h include/Complex.h include/Quaternion.h include/Vertex.h include/Edge.h include/Face.h include/AliasTable.h include/Camera.h include/Shader.h include/DenseMatrix.h src/DenseMatrix.inl include/DenseMatrix.h include/LinearContext.h include/Quaternion.h include/SparseMatrix.h src/SparseMatrix.inl include/Real.h include/Complex.h include/Utility.h 
 	$(CC) $(CFLAGS) -c src/main.cpp -o obj/main.o
 
+obj/commandline.o: src/main.cpp include/Mesh.h include/HalfEdge.h include/Vector.h include/Types.h include/Complex.h include/Quaternion.h include/Vertex.h include/Edge.h include/Face.h include/Camera.h include/DenseMatrix.h src/DenseMatrix.inl include/DenseMatrix.h include/LinearContext.h include/Quaternion.h include/SparseMatrix.h src/SparseMatrix.inl include/Real.h include/Complex.h include/Utility.h 
+	$(CC) $(CFLAGS) -c src/commandline.cpp -o obj/commandline.o
+
 
 clean:
 	rm -f $(OBJS)
+	rm -f $(CLOBJS)
 	rm -f $(TARGET)
 	rm -f $(TARGET).exe
+	rm -f $(CLTARGET)
+	rm -f $(CLTARGET).exe
 

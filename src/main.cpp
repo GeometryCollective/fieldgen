@@ -2,7 +2,6 @@
 using namespace std;
 
 #include "Viewer.h"
-#include "DenseMatrix.h"
 using namespace DDG;
 
 int main( int argc, char** argv )

@@ -69,7 +69,6 @@ namespace DDG
 	 static void mToggleFixedBoundary( void );
 	 static void mToggleSingularities( void );
 	 static void mToggleHedgehog( void );
-	 static void mToggleNormalized( void );
          static void mResetMesh( void );
          static void mWriteMesh( void );
          static void mExit( void );
@@ -95,7 +94,6 @@ namespace DDG
             menuScreenshot,
             menuToggleAlignment,
             menuToggleFixedBoundary,
-            menuToggleNormalized,
             menuToggleHedgehog,
             menuToggleSingularities
          };
@@ -128,7 +126,6 @@ namespace DDG
 
          // field parameters
          static int fieldDegree;  // degree k of k-field
-         static bool normalized;  // whether to normalize vectors
          static bool align;       // toggles alignment with curvature
          static bool fixBoundary; // toggles fixed boundary vectors (Dirichlet conditions)
          static double t;         // amount of alignment

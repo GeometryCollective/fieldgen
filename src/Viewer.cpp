@@ -25,7 +25,6 @@ namespace DDG
    Camera Viewer::camera;
    Shader Viewer::shader;
    int Viewer::fieldDegree = 1;
-   bool Viewer::normalized = true;
    bool Viewer::align = false;
    bool Viewer::fixBoundary = false;
    double Viewer::t = 0.;
@@ -83,7 +82,6 @@ namespace DDG
       glutAddMenuEntry( "[u] Smooth Field",          menuSmoothField         );
       glutAddMenuEntry( "[c] Toggle Curvature",      menuToggleAlignment     );
       glutAddMenuEntry( "[b] Toggle Fixed Boundary", menuToggleFixedBoundary );
-      glutAddMenuEntry( "[n] Toggle Normalization",  menuToggleNormalized    );
       glutAddMenuEntry( "[r] Reset Mesh",            menuResetMesh           );
       glutAddMenuEntry( "[w] Write Mesh",            menuWriteMesh           );
       glutAddMenuEntry( "[\\] Screenshot",           menuScreenshot          );
@@ -124,9 +122,6 @@ namespace DDG
             break;
          case( menuToggleFixedBoundary ):
             mToggleFixedBoundary();
-            break;
-         case( menuToggleNormalized ):
-            mToggleNormalized();
             break;
          case( menuWriteMesh ):
             mWriteMesh();
@@ -176,15 +171,15 @@ namespace DDG
 
       if( align )
       {
-         mesh.SmoothestCurvatureAlignment( fieldDegree, s, t, normalized );
+         mesh.SmoothestCurvatureAlignment( fieldDegree, s, t, true );
       }
       else if( fixBoundary )
       {
-         mesh.ComputeSmoothestFixedBoundary( fieldDegree, s, normalized );
+         mesh.ComputeSmoothestFixedBoundary( fieldDegree, s, true );
       }
       else
       {
-         mesh.ComputeSmoothest( fieldDegree, s, normalized );
+         mesh.ComputeSmoothest( fieldDegree, s, true );
       }
 
       fieldViz = true;
@@ -219,11 +214,6 @@ namespace DDG
    {
       fixBoundary = !fixBoundary;
       if( fixBoundary ) align = false;
-   }
-   
-   void Viewer :: mToggleNormalized( void )
-   {
-      normalized = !normalized;
    }
    
    void Viewer :: mSmoothShaded( void )
@@ -327,9 +317,6 @@ namespace DDG
          case '*':
 	    mToggleSingularities();
 	    break;
-         // case 'n':
-         //    mToggleNormalized();
-         //    break;
          case 27:
             mExit();
             break;
@@ -772,14 +759,6 @@ namespace DDG
          h += hInc;
       }
       
-      // display field degree
-      {
-         stringstream ss;
-         ss << "normalized: " << (normalized?"true":"false");
-         drawString( ss.str(), 16, H-h );
-         h += hInc;
-      }
-
       // display s
       {
          stringstream ss;

@@ -73,14 +73,14 @@ have been set, simply type
    ```make```
 
 which (barring any compilation/linker errors) should build an executable
-called `fieldgen`.
+called `fieldviz`.
 
 
 ## Running
 
 Once built, you should be able to run the executable by typing
 
-```./fieldgen data/bunny.obj```
+```./fieldviz data/bunny.obj```
 
 (or specifying a path to any mesh file in OBJ format).  You should
 see a window showing the mesh and some information in the upper-left
@@ -132,6 +132,35 @@ where `i` is the index of the vertex, and `x` `y` `z` are the three components o
    singularity `i` `s`
 
 where `i` is the index of the triangle, and `s` is the degree of the singularity.  All indices are 1-based rather than 0-based.
+
+## Command Line
+
+A command line version of `fieldgen` is also available, which can be useful when running in batch mode, over a network, or in other situations where OpenGL visualization is not available or appropriate (e.g., bundling `fieldgen` into a plugin).
+
+**To build:** follow the same instructions above, but type
+
+```make commandline```
+
+instead of just `make`.  Doing so should produce an executable called `fieldgen` (rather than `fieldviz`).
+
+**To run:** the only mandatory arguments are paths to the input and output meshes (in OBJ format); by default, `fieldgen` will then compute the smoothest unit vector field.  To get a full set of options, type
+
+```./fieldgen```
+
+which should print the usage string
+
+```usage: ./fieldgen OBJ_INPUT_PATH OBJ_OUTPUT_PATH```  
+``` [--degree=n] [--alignToCurvature] [--alignToBoundary] [--s=S] [--t=T]```
+
+The command line options are as follows:
+
+* `degree` — field degree (1=unit vector field, 2=line field, 4=cross field, etc.)
+* `alignToCurvature` — align field to principal curvature directions
+* `alignToBoundary` — align field to the domain boundary
+* `s/S` — controls the smoothness energy; -1=holomorphic, 0=Dirichlet, 1=antiholomorphic
+* `t/T` — controls the trade off between smoothness and curvature alignment (if enabled)
+
+Note that enabling boundary alignment will override curvature alignment.
 
 ## Source
 
