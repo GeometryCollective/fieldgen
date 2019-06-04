@@ -2,6 +2,7 @@
 #include <iostream>
 #include <map>
 #include <set>
+#include <cmath>
 
 #include "MeshIO.h"
 #include "Mesh.h"
@@ -28,9 +29,43 @@ namespace DDG
       return 0;
    }
    
-   void MeshIO :: write( ostream& out, const Mesh& mesh )
+   void MeshIO :: write( ostream& out, const Mesh& mesh, unsigned int n )
    // writes a mesh to a valid, open output stream out
    {
+      out << "# out.obj" << endl;
+      out << "#" << endl;
+      out << "# This file contains a triangle mesh in Wavefront OBJ format." << endl;
+      out << "# It also includes a tangent vector field, encoded in comment" << endl;
+      out << "# lines at the end of the file.  The degree of the field is" << endl;
+      out << "# specified by a line of the form" << endl;
+      out << "#" << endl;
+      out << "#    degree n" << endl;
+      out << "#" << endl;
+      out << "# where (for instance) n=1 is a unit vector field, n=2 is a" << endl;
+      out << "# line field, and n=4 is a cross field.  Individual vectors" << endl;
+      out << "# are then specified by lines of the form" << endl;
+      out << "#" << endl;
+      out << "#    field i x y z" << endl;
+      out << "#" << endl;
+      out << "# where i is the index of the vertex, and x y z are the three" << endl;
+      out << "# components of the tangent vector.  In the case where these" << endl;
+      out << "# vectors encode an n-direction field this vector is just one" << endl;
+      out << "# of the n possible vectors.  The other vectors can be obtained" << endl;
+      out << "# by rotating this one around the corresponding  vertex normal," << endl;
+      out << "# which is given in the usual vn line.  Singularities in the" << endl;
+      out << "# field, which are associated with faces, are indicated by lines" << endl;
+      out << "#" << endl;
+      out << "#    singularity i s" << endl;
+      out << "#" << endl;
+      out << "# where i is the index of the triangle, and s is the degree of" << endl;
+      out << "# the singularity.  All indices are 1-based rather than 0-based." << endl;
+      out << "#" << endl;
+      out << "# This field was generated using the fieldgen program:" << endl;
+      out << "#" << endl;
+      out << "#    https://github.com/GeometryCollective/fieldgen" << endl;
+      out << "#" << endl;
+      out << endl;
+
       int currentIndex = 1;
       map<VertexCIter,int> vertexIndex;
    
@@ -46,17 +81,16 @@ namespace DDG
          currentIndex++;
       }
 
-      for( FaceCIter f  = mesh.faces.begin();
-                     f != mesh.faces.end();
-                     f ++ )
+      out << "vt 0 0" << endl;
+
+      for( VertexCIter v  = mesh.vertices.begin();
+                       v != mesh.vertices.end();
+                       v++ )
       {
-         HalfEdgeIter he = f->he;
-   
-         for( int j = 0; j < 3; j++ )
-         {
-            out << "vt " << he->texcoord.x << " " << he->texcoord.y << endl;
-            he = he->next;
-         }
+         Vector N = v->normal;
+         out << "vn " << N.x << " "
+                      << N.y << " "
+                      << N.z << endl;
       }
    
       for( size_t i = 0; i < mesh.faces.size(); i++ )
@@ -72,17 +106,46 @@ namespace DDG
    
          out << "f ";
    
-         int j = 0;
          do
          {
-            out << vertexIndex[ he->vertex ] << "/" << 1+(i*3+j) << " ";
+            int j = vertexIndex[ he->vertex ];
+            out << j << "/1/" << j << " ";
             he = he->next;
-            j++;
          }
          while( he != f.he );
    
          out << endl;
       }
+
+      out << "# degree " << n << endl;
+
+      for( VertexCIter v = mesh.vertices.begin(); v != mesh.vertices.end(); v++ )
+      {
+         const Vector c = v->position; // vertex location
+         const Vector N = v->normal; // normal
+         const Vector e1 = v->Xvector().unit(); // bases for tangent plane
+         const Vector e2 = cross( N, e1 );
+
+         const double theta = v->u.arg();
+         const Vector X = cos(theta)*e1 + sin(theta)*e2;
+
+         int i = vertexIndex[v];
+         out << "# field " << i << " " << X.x << " " << X.y << " " << X.z << endl;
+      }
+
+      int p = 1;
+      for( FaceCIter f  = mesh.faces.begin();
+                     f != mesh.faces.end();
+                     f ++ )
+      {
+         if( f->isBoundary() ) continue;
+         if( f->sing != 0 )
+         {
+            out << "# singularity " << p << " " << (double)f->sing/(double)n << endl;
+         }
+         p++;
+      }
+
    }
    
    int MeshIO :: readMeshData( istream& in, MeshData& data )

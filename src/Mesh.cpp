@@ -111,7 +111,7 @@ namespace DDG
       }
    }
 
-   int Mesh::write( const string& filename ) const
+   int Mesh::write( const string& filename, unsigned int n ) const
    // reads a mesh from a Wavefront OBJ file; return value is nonzero
    // only if there was an error
    {
@@ -123,7 +123,7 @@ namespace DDG
          return 1;
       }
 
-      MeshIO::write( out, *this );
+      MeshIO::write( out, *this, n );
 
       return 0;
    }

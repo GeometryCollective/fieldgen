@@ -39,6 +39,9 @@ namespace DDG
     // resp. an actual vector in world space
     const Vector Xvector( void ) const;
 
+    // for display/output: one of n vectors representing the field (e.g., one of four "arms" of a cross)
+    const Vector fieldVector( void ) const;
+
     // angle scale factor for intrinsic tangent spaces
     double s;
 

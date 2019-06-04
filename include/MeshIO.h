@@ -32,7 +32,7 @@ namespace DDG
          static int read( std::istream& in, Mesh& mesh );
          // reads a mesh from a valid, open input stream in
 
-         static void write( std::ostream& out, const Mesh& mesh );
+         static void write( std::ostream& out, const Mesh& mesh, unsigned int n );
          // writes a mesh to a valid, open output stream out
 
          static  int buildMesh( const MeshData& data, Mesh& mesh );

@@ -6,7 +6,16 @@
 
 ## About
 
-This code is a reference implementation of the paper
+Given a triangulated surface, `fieldgen` computes the smoothest unit vector
+field, or more generally, the smoothest unit _n_-vector field (e.g., _n_=1,2,4
+for unit vector, line, and cross fields, respectively).  Singularities,
+such as sources and sinks, are automatically placed in locations that allow
+the field to achieve optimal smoothness.  Such fields can then be used for a
+wide variety of computer graphics and geometry processing tasks such as
+surface parameterization, quad meshing, architectural geometry, anisotropic
+shading, and texture synthesis.
+
+The code is a reference implementation of the paper
 
    >Felix Knöppel, Keenan Crane, Ulrich Pinkall, Peter Schröder  
    ["Globally Optimal Direction Fields"](http://www.cs.cmu.edu/~kmcrane/Projects/GloballyOptimalDirectionFields/paper.pdf)  
@@ -44,7 +53,7 @@ below for easy install instructions for CHOLMOD.
 ### Version History
 
 * 0.01 (Sep 1, 2013) — Initial release
-* 0.02 (Jun 4, 2019) — Added boundary alignment
+* 0.02 (Jun 4, 2019) — Added boundary alignment, plain-text output of direction fields
 
 ## Installation
 
@@ -64,14 +73,14 @@ have been set, simply type
    ```make```
 
 which (barring any compilation/linker errors) should build an executable
-called `kvec`.
+called `fieldgen`.
 
 
 ## Running
 
 Once built, you should be able to run the executable by typing
 
-```./kvec data/bunny.obj```
+```./fieldgen data/bunny.obj```
 
 (or specifying a path to any mesh file in OBJ format).  You should
 see a window showing the mesh and some information in the upper-left
@@ -92,16 +101,37 @@ Other commands can be accessed via the keyboard:
 |      `m` | draw smooth shaded
 |      `f` | draw faceted (with wireframe)
 |      `*` | show/hide singularities
+|      `w` | write solution to `out.obj`
 |  `` ` `` | take a screenshot
 | `escape` | exit
 
 **Note:** curvature alignment works only when the symmetry degree of the field is 2 or 4.
 
-Currently there is no built-in functionality for writing direction fields to
-disk, since there is no standard file format for fields and each user likely
-has different needs.  The best place to look is at the code that draws the
-field (in `Viewer.cpp`); one can also write the mesh itself using methods in
-`MeshIO.cpp`.
+### Input
+
+`fieldgen` assumes that the input is an [oriented](https://en.wikipedia.org/wiki/Orientability) and [manifold](http://15462.courses.cs.cmu.edu/fall2018/lecture/meshes/slide_013) triangle mesh, with or without boundary.  Meshes should be specified in the [Wavefront OBJ file format](https://en.wikipedia.org/wiki/Wavefront_.obj_file).  Note that the resolution of the input mesh will affect the resolution of the output field, since one vector is computed per vertex.  Also note that extremely poor-quality meshes (e.g., with near-zero angles or triangle areas) might cause problems for field generation, though generally the algorithm is very robust (see in particular Figure 16 of the paper by Knöppel et al, listed above).
+
+### Output
+
+Hitting the `w` key will write the current field (and the mesh) to the file
+`out.obj` in the working directory.  Files are written as triangle meshes in
+[Wavefront OBJ format](https://en.wikipedia.org/wiki/Wavefront_.obj_file).
+They also include a tangent vector field, encoded in comment lines at the end
+of the file.  The degree of the field is specified by a line of the form
+
+```degree n```
+
+where (for instance) _n_=1 is a unit vector field, _n_=2 is a
+line field, and _n_=4 is a cross field.  Individual vectors
+are then specified by lines of the form
+
+```field i x y z```
+
+where `i` is the index of the vertex, and `x` `y` `z` are the three components of the tangent vector.  In the case where these vectors encode an _n_-direction field this vector is just one of the _n_ possible vectors.  The other vectors can be obtained by rotating this one around the corresponding  vertex normal, which is given in the usual `vn` line.  Singularities in the field, which are associated with faces, are indicated by lines
+
+   singularity `i` `s`
+
+where `i` is the index of the triangle, and `s` is the degree of the singularity.  All indices are 1-based rather than 0-based.
 
 ## Source
 

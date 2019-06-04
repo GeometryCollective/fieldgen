@@ -71,9 +71,10 @@ namespace DDG
     // reads a mesh from a Wavefront OBJ file; return value is nonzero
     // only if there was an error
 
-    int write( const std::string& filename ) const;
+    int write( const std::string& filename, unsigned int n ) const;
     // writes a mesh to a Wavefront OBJ file; return value is nonzero
     // only if there was an error
+    // the value n gives the degree of the field
 
     bool reload( void );
     // reloads a mesh from disk using the most recent input filename

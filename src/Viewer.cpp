@@ -200,7 +200,7 @@ namespace DDG
    
    void Viewer :: mWriteMesh( void )
    {
-      mesh.write( "out.obj" );
+      mesh.write( "out.obj", fieldDegree );
    }
    
    void Viewer :: mExit( void )
@@ -498,6 +498,7 @@ namespace DDG
 
    void Viewer :: drawField( void )
    {
+      const double pi = DDGConstants::PI;
       const double scale = (fieldDegree==1) ? 1. : .5;
 
       glPushAttrib( GL_ALL_ATTRIB_BITS );
@@ -509,19 +510,26 @@ namespace DDG
       glEnable( GL_BLEND );
       glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-      for( VertexIter vi = mesh.vertices.begin(); vi != mesh.vertices.end(); vi++ ){
-	const Vector x = vi->Xvector(), c = vi->position, n = vi->normal;
-	const Vector rx = x.norm() * cross(n,cross(x,n)).unit();
-	const double theta = vi->u.arg();
-	for( int i = 0; i < fieldDegree; i++ ){
-	   const Quaternion r(cos(theta/2+i*DDGConstants::PI/fieldDegree),sin(theta/2+i*DDGConstants::PI/fieldDegree)*n);
-	   const Vector L = scale*vi->u.norm()*(r*Quaternion(0,rx)*r.conj()).im();
-	   glBegin( GL_LINES );
-	   glVertex3dv( &c[0] );
-	   glVertex3dv( &(c+L)[0] );
-	   glEnd();
-	 }
+      glBegin( GL_LINES );
+      for( VertexIter vi = mesh.vertices.begin(); vi != mesh.vertices.end(); vi++ )
+      {
+         const Vector c = vi->position; // vertex location
+         const Vector N = vi->normal; // normal
+         const Vector e1 = vi->Xvector(); // bases for tangent plane
+         const Vector e2 = cross( N, e1 );
+
+         const double theta = vi->u.arg();
+
+         for( int i = 0; i < fieldDegree; i++ )
+         {
+            const double phi = i*2.*pi/fieldDegree + theta;
+            const Vector L = scale * vi->u.norm() * ( cos(phi)*e1 + sin(phi)*e2 );
+
+            glVertex3dv( &c[0] );
+            glVertex3dv( &(c+L)[0] );
+         }
       }
+      glEnd();
 
       glPopAttrib();
    }
