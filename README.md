@@ -30,8 +30,8 @@ tasks, or in different build settings.  In particular:
 
        <http://www.cs.cmu.edu/~kmcrane/Projects/StripePatterns/code.zip>
 
-   - There is an implementaiton in _Directional_, which is built on
-     top of libigl and Eigen, and is hence header-only:
+   - There is also an implementation in _Directional_, which is built on
+     top of [Eigen](http://eigen.tuxfamily.org), and is hence header-only:
 
        <https://github.com/avaxman/Directional>
 
