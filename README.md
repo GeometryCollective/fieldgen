@@ -53,7 +53,7 @@ below for easy install instructions for CHOLMOD.
 ### Version History
 
 * 0.01 (Sep 1, 2013) — Initial release
-* 0.02 (Jun 4, 2019) — Added boundary alignment, plain-text output of direction fields
+* 0.02 (Jun 4, 2019) — Added boundary alignment, OBJ output, command line support
 
 ## Installation
 
