@@ -25,7 +25,7 @@ DDG_OPENGL_LIBS       = -framework OpenGL -framework GLUT
 
 #######################################################################################################
 
-TARGET = kvec
+TARGET = fieldgen
 CC = g++
 LD = g++
 CFLAGS = -g -Wall -Wno-deprecated -Werror -Wno-error=deprecated-declarations -ansi -pedantic  $(DDG_INCLUDE_PATH) -I./include -I./src
