@@ -84,7 +84,7 @@ Other commands can be accessed via the keyboard:
 | key      | action
 | -------- | -----------------------------------------------------------------------------
 |  `space` | update field
-|    `k/K` | increase/decrease the symmetry degree of the field
+|    `k/K` | increase/decrease the symmetry degree of the field (1=vector, 2=line, 4=cross)
 |    `s/S` | adjust the smoothness energy; -1=holomorphic, 0=Dirichlet, 1=antiholomorphic
 |    `t/T` | adjust trade off between smoothness and curvature alignment (if enabled)
 |      `c` | toggle curvature alignment
