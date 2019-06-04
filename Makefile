@@ -34,7 +34,7 @@ LIBS = $(DDG_OPENGL_LIBS) $(DDG_SUITESPARSE_LIBS) $(DDG_BLAS_LIBS)
 
 ## !! Do not edit below this line -- dependencies can be updated by running ./update ##################
 
-OBJS = obj/Camera.o obj/Complex.o obj/DenseMatrix.o obj/Edge.o obj/Face.o obj/HalfEdge.o obj/Image.o obj/KVecDir.o obj/KVecDirOldAndDual.o obj/LinearContext.o obj/LinearEquation.o obj/LinearPolynomial.o obj/LinearSystem.o obj/Mesh.o obj/MeshIO.o obj/Quaternion.o obj/Real.o obj/SectionIntegrals.o obj/Shader.o obj/SparseMatrix.o obj/Variable.o obj/Vector.o obj/Vertex.o obj/Viewer.o obj/main.o
+OBJS = obj/Camera.o obj/Complex.o obj/DenseMatrix.o obj/Edge.o obj/Face.o obj/HalfEdge.o obj/Image.o obj/KVecDir.o obj/LinearContext.o obj/Mesh.o obj/MeshIO.o obj/Quaternion.o obj/Real.o obj/SectionIntegrals.o obj/Shader.o obj/SparseMatrix.o obj/Vector.o obj/Vertex.o obj/Viewer.o obj/main.o
 
 all: $(TARGET)
 
@@ -65,20 +65,8 @@ obj/Image.o: src/Image.cpp include/Image.h
 obj/KVecDir.o: src/KVecDir.cpp include/Utility.h include/Complex.h include/Complex.h include/Mesh.h include/HalfEdge.h include/Vector.h include/Types.h include/Quaternion.h include/Vertex.h include/Edge.h include/Face.h include/AliasTable.h include/SparseMatrix.h src/SparseMatrix.inl include/Real.h include/Complex.h include/SparseMatrix.h include/DenseMatrix.h src/DenseMatrix.inl include/LinearContext.h include/Quaternion.h include/Utility.h include/SectionIntegrals.h 
 	$(CC) $(CFLAGS) -c src/KVecDir.cpp -o obj/KVecDir.o
 
-obj/KVecDirOldAndDual.o: src/KVecDirOldAndDual.cpp 
-	$(CC) $(CFLAGS) -c src/KVecDirOldAndDual.cpp -o obj/KVecDirOldAndDual.o
-
 obj/LinearContext.o: src/LinearContext.cpp include/LinearContext.h 
 	$(CC) $(CFLAGS) -c src/LinearContext.cpp -o obj/LinearContext.o
-
-obj/LinearEquation.o: src/LinearEquation.cpp include/LinearEquation.h include/LinearPolynomial.h include/Variable.h 
-	$(CC) $(CFLAGS) -c src/LinearEquation.cpp -o obj/LinearEquation.o
-
-obj/LinearPolynomial.o: src/LinearPolynomial.cpp include/LinearPolynomial.h include/Variable.h include/Types.h 
-	$(CC) $(CFLAGS) -c src/LinearPolynomial.cpp -o obj/LinearPolynomial.o
-
-obj/LinearSystem.o: src/LinearSystem.cpp include/LinearSystem.h include/LinearEquation.h include/LinearPolynomial.h include/Variable.h include/SparseMatrix.h include/Types.h include/Complex.h src/SparseMatrix.inl include/Real.h include/Complex.h include/SparseMatrix.h include/DenseMatrix.h src/DenseMatrix.inl include/LinearContext.h include/Quaternion.h include/Vector.h include/Utility.h include/DenseMatrix.h include/Real.h include/LinearContext.h include/Types.h 
-	$(CC) $(CFLAGS) -c src/LinearSystem.cpp -o obj/LinearSystem.o
 
 obj/Mesh.o: src/Mesh.cpp include/Mesh.h include/HalfEdge.h include/Vector.h include/Types.h include/Complex.h include/Quaternion.h include/Vertex.h include/Edge.h include/Face.h include/AliasTable.h include/MeshIO.h 
 	$(CC) $(CFLAGS) -c src/Mesh.cpp -o obj/Mesh.o
@@ -100,9 +88,6 @@ obj/Shader.o: src/Shader.cpp include/Shader.h
 
 obj/SparseMatrix.o: src/SparseMatrix.cpp include/SparseMatrix.h include/Types.h include/Complex.h src/SparseMatrix.inl include/Real.h include/Complex.h include/SparseMatrix.h include/DenseMatrix.h src/DenseMatrix.inl include/LinearContext.h include/Quaternion.h include/Vector.h include/Utility.h 
 	$(CC) $(CFLAGS) -c src/SparseMatrix.cpp -o obj/SparseMatrix.o
-
-obj/Variable.o: src/Variable.cpp include/Variable.h 
-	$(CC) $(CFLAGS) -c src/Variable.cpp -o obj/Variable.o
 
 obj/Vector.o: src/Vector.cpp include/Vector.h include/Complex.h 
 	$(CC) $(CFLAGS) -c src/Vector.cpp -o obj/Vector.o
