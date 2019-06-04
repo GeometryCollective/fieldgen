@@ -91,6 +91,7 @@ Other commands can be accessed via the keyboard:
 |      `b` | toggle boundary alignment
 |      `m` | draw smooth shaded
 |      `f` | draw faceted (with wireframe)
+|      `*` | show/hide singularities
 |  `` ` `` | take a screenshot
 | `escape` | exit
 
