@@ -113,11 +113,11 @@ namespace DDG
     // uses q slot to do alignment (gets called by InitKVecDirData)
     void ComputeConnectionAndHopf( void );
 
-    // last argument: should we use constant curvature (or the
-    // previously compute index form) as the new curvature?
-    void ComputeRotation1Form( const unsigned int n, const bool constK );
-    // are there any boundary/ies?
-    bool FindGenerators( void );
+    // // last argument: should we use constant curvature (or the
+    // // previously compute index form) as the new curvature?
+    // void ComputeRotation1Form( const unsigned int n, const bool constK );
+    // // are there any boundary/ies?
+    // bool FindGenerators( void );
 
     std::vector<HalfEdge> halfedges;
     std::vector<Vertex>   vertices;

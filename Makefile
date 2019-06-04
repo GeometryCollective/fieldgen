@@ -34,7 +34,7 @@ LIBS = $(DDG_OPENGL_LIBS) $(DDG_SUITESPARSE_LIBS) $(DDG_BLAS_LIBS)
 
 ## !! Do not edit below this line -- dependencies can be updated by running ./update ##################
 
-OBJS = obj/Camera.o obj/Complex.o obj/DenseMatrix.o obj/Edge.o obj/Face.o obj/HalfEdge.o obj/Image.o obj/KVecDir.o obj/KVecDirOldAndDual.o obj/LinearContext.o obj/LinearEquation.o obj/LinearPolynomial.o obj/LinearSystem.o obj/Mesh.o obj/MeshIO.o obj/ParallelSection.o obj/Quaternion.o obj/Real.o obj/SectionIntegrals.o obj/Shader.o obj/SparseMatrix.o obj/Variable.o obj/Vector.o obj/Vertex.o obj/Viewer.o obj/main.o
+OBJS = obj/Camera.o obj/Complex.o obj/DenseMatrix.o obj/Edge.o obj/Face.o obj/HalfEdge.o obj/Image.o obj/KVecDir.o obj/KVecDirOldAndDual.o obj/LinearContext.o obj/LinearEquation.o obj/LinearPolynomial.o obj/LinearSystem.o obj/Mesh.o obj/MeshIO.o obj/Quaternion.o obj/Real.o obj/SectionIntegrals.o obj/Shader.o obj/SparseMatrix.o obj/Variable.o obj/Vector.o obj/Vertex.o obj/Viewer.o obj/main.o
 
 all: $(TARGET)
 
@@ -85,9 +85,6 @@ obj/Mesh.o: src/Mesh.cpp include/Mesh.h include/HalfEdge.h include/Vector.h incl
 
 obj/MeshIO.o: src/MeshIO.cpp include/MeshIO.h include/Vector.h include/Mesh.h include/HalfEdge.h include/Types.h include/Complex.h include/Quaternion.h include/Vertex.h include/Edge.h include/Face.h include/AliasTable.h 
 	$(CC) $(CFLAGS) -c src/MeshIO.cpp -o obj/MeshIO.o
-
-obj/ParallelSection.o: src/ParallelSection.cpp include/Utility.h include/Complex.h include/Complex.h include/Mesh.h include/HalfEdge.h include/Vector.h include/Types.h include/Quaternion.h include/Vertex.h include/Edge.h include/Face.h include/AliasTable.h include/SparseMatrix.h src/SparseMatrix.inl include/Real.h include/Complex.h include/SparseMatrix.h include/DenseMatrix.h src/DenseMatrix.inl include/LinearContext.h include/Quaternion.h include/Utility.h include/SectionIntegrals.h 
-	$(CC) $(CFLAGS) -c src/ParallelSection.cpp -o obj/ParallelSection.o
 
 obj/Quaternion.o: src/Quaternion.cpp include/Quaternion.h include/Vector.h include/Complex.h 
 	$(CC) $(CFLAGS) -c src/Quaternion.cpp -o obj/Quaternion.o

@@ -165,7 +165,6 @@ namespace DDG
       }
 
       mesh.clearSingularities();
-      //mesh.InitKVecDirData();
 
       if( align )
       {
@@ -174,10 +173,6 @@ namespace DDG
       else
       {
          mesh.ComputeSmoothest( fieldDegree, s, normalized );
-	 // if( first_call ){
-	 //   mesh.ComputeRotation1Form( fieldDegree, false );
-	 //   first_call = false;
-	 // }
       }
 
       fieldViz = true;
