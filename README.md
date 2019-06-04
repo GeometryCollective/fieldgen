@@ -9,7 +9,7 @@
 This code is a reference implementation of the paper
 
    >Felix Knöppel, Keenan Crane, Ulrich Pinkall, Peter Schröder  
-   _"Globally Optimal Direction Fields"_  
+   ["Globally Optimal Direction Fields"](http://www.cs.cmu.edu/~kmcrane/Projects/GloballyOptimalDirectionFields/paper.pdf)  
    SIGGRAPH 2013
 
 This version carefully implements the finite element connection Laplacian as
