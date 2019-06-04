@@ -82,6 +82,9 @@ namespace DDG
       do{ if( hi->onBoundary ) return true; }while( ( hi = hi->flip->next ) != he );
       return false;
     }
+
+    int id;
+    // unique ID (used to index matrices)
   };
 }
 

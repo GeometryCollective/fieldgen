@@ -130,6 +130,10 @@ namespace DDG
 
   protected:
     std::string inputFilename;
+
+    int nInteriorVertices;
+    void indexVertices();
+    // assign unique id to each vertex (interior first, then boundary)
     
     void updateNormals( void );
     void updateRadius( void );

@@ -71,9 +71,37 @@ namespace DDG
       int rval;
       if( !( rval = MeshIO::read( in, *this )))
       {
+         indexVertices();
          updateGeometry();
       }
       return rval;
+   }
+
+   void Mesh::indexVertices()
+   {
+      int nVertices = 0;
+
+      // index interior vertices first
+      for( VertexIter v = vertices.begin(); v != vertices.end(); v++ )
+      {
+         if( !v->onBoundary() )
+         {
+            v->id = nVertices;
+            nVertices++;
+         }
+      }
+
+      nInteriorVertices = nVertices;
+
+      // then index boundary vertices
+      for( VertexIter v = vertices.begin(); v != vertices.end(); v++ )
+      {
+         if( v->onBoundary() )
+         {
+            v->id = nVertices;
+            nVertices++;
+         }
+      }
    }
 
    int Mesh::write( const string& filename ) const
