@@ -79,10 +79,6 @@ namespace DDG{
     for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ ){
       // initializations: mass, angle sums, Hopf differential
       vi->m = 0; vi->s = 0; vi->q = Complex(0,0);
-      // bends the he pointer (if needed) so as to point to the first
-      // boundary (exitant) edge when doing a CCW traversal; this
-      // makes boundary processing far easier
-      vi->EnforceBoundaryHalfEdgeConvention();
     }
 
     for( FaceIter fi = faces.begin(); fi != faces.end(); fi++ ){

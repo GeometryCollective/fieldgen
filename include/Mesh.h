@@ -105,11 +105,10 @@ namespace DDG
     // loads the matrix (gets called by ComputeSmoothest)
     void SetupEnergyMatrix( SparseMatrix<DDG::Complex> &A, SparseMatrix<DDG::Complex> &M,
 			    const unsigned int n, const double s, double lambda = 0. );
-    void SetupEnergyMatrixClosedForm( SparseMatrix<DDG::Complex> &K,
-				      SparseMatrix<DDG::Complex> &M,
-				      const unsigned int n, const double s );
+
     // computes indices of all triangles (gets called by ComputeSmoothest)
     void ComputeIndices( const unsigned int n );
+
     // uses q slot to do alignment (gets called by InitKVecDirData)
     void ComputeConnectionAndHopf( void );
 

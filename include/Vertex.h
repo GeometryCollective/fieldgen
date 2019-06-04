@@ -83,6 +83,10 @@ namespace DDG
       return false;
     }
 
+    double BoundaryNormalAngle();
+    // for a boundary vertex, return angle corresponding to the
+    // (inward) vector orthogonal to the domain boundary
+
     int id;
     // unique ID (used to index matrices)
   };

@@ -85,5 +85,18 @@ namespace DDG
       if( hi->flip->face->isBoundary() ){ he = hi; break; }
     }while( ( hi = hi->flip->next ) != he );
   }
+
+  double Vertex::BoundaryNormalAngle()
+  {
+     HalfEdgeIter h = he;
+     do
+     {
+        if( h->onBoundary ) break;
+        h = h->next->next->flip;
+     }
+     while( h != he );
+
+     return AngleOfEdge( h )/2.;
+  }
 }
 

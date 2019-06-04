@@ -71,6 +71,13 @@ namespace DDG
       int rval;
       if( !( rval = MeshIO::read( in, *this )))
       {
+         for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ ){
+            // bends the he pointer (if needed) so as to point to the first
+            // boundary (exitant) edge when doing a CCW traversal; this
+            // makes boundary processing far easier
+            vi->EnforceBoundaryHalfEdgeConvention();
+         }
+
          indexVertices();
          updateGeometry();
       }
