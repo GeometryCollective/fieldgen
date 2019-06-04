@@ -591,7 +591,7 @@ namespace DDG
 
       shader.enable();
 
-      double radius = .005 * mesh.radius;
+      double radius = .02 * mesh.radius;
       int nSlices = 24;
       int nStacks = 24;
 

@@ -75,9 +75,9 @@ Once built, you should be able to run the executable by typing
 
 (or specifying a path to any mesh file in OBJ format).  You should
 see a window showing the mesh and some information in the upper-left
-corner.
+corner.  Hitting `space` will generate the smoothest field on the surface:
 
-Hitting spacebar will generate the smoothest field on the surface.
+![interface](interface.jpg)
 
 Other commands can be accessed via the keyboard:
 
@@ -107,14 +107,16 @@ field (in `Viewer.cpp`); one can also write the mesh itself using methods in
 Much of the source code in this archive is just there to support basic stuff
 like loading a mesh, solving a linear system, etc.  The key routines are all in
 
-   Mesh.h/Mesh.cpp
-   SectionIntegrals.h/SectionIntegrals.cpp
+* `Mesh.cpp`
+* `KVecDir.cpp`
+* `SectionIntegrals.cpp`
 
 The main routines are
 
 
 * `Mesh::InitKVecDirData()` — setup
 * `Mesh::ComputeSmoothest()` — computes smoothest field
+* `Mesh::ComputeSmoothestFixedBoundary()` — computes smoothest field aligned to the boundary
 * `Mesh::SmoothestCurvatureAlignment()` — computes curvature-aligned field
 
 An example of how these routines should be called is found in `Viewer::mSmoothField()`.
