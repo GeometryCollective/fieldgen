@@ -19,6 +19,7 @@ namespace DDG
    Viewer::RenderMode Viewer::mode = renderShaded;
    bool Viewer::fieldViz = false;
    bool Viewer::hedgehogViz = false;
+   bool Viewer::showSingularities = true;
    GLuint Viewer::surfaceDL = 0;
    int Viewer::windowSize[2] = { 512, 512 };
    Camera Viewer::camera;
@@ -44,7 +45,7 @@ namespace DDG
 
    void Viewer :: initGL( void )
    {
-      glClearColor( .5, .5, .5, 1. );
+      glClearColor( 1., 1., 1., 0. );
       initLighting();
    }
    
@@ -55,7 +56,8 @@ namespace DDG
    
       // initialize window
       glutInitWindowSize( windowSize[0], windowSize[1] );
-      glutInitDisplayMode( GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH );
+      glutInitDisplayString("rgba stencil double samples=16");
+      //glutInitDisplayMode( GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH );
       glutInit( &argc, (char**)&argv );
       glutCreateWindow( "DDG" );
    
@@ -70,10 +72,11 @@ namespace DDG
       // initialize menus
       int viewMenu = glutCreateMenu( Viewer::view );
       glutSetMenu( viewMenu );
-      glutAddMenuEntry( "[m] Smooth Shaded",    menuSmoothShaded    );
-      glutAddMenuEntry( "[f] Wireframe",        menuWireframe       );
-      glutAddMenuEntry( "[↑] Zoom In",          menuZoomIn          );
-      glutAddMenuEntry( "[↓] Zoom Out",         menuZoomOut         );
+      glutAddMenuEntry( "[m] Smooth Shaded",         menuSmoothShaded        );
+      glutAddMenuEntry( "[f] Wireframe",             menuWireframe           );
+      glutAddMenuEntry( "[↑] Zoom In",               menuZoomIn              );
+      glutAddMenuEntry( "[↓] Zoom Out",              menuZoomOut             );
+      glutAddMenuEntry( "[*] Toggle Singularities",  menuToggleSingularities );
 
       int mainMenu = glutCreateMenu( Viewer::menu );
       glutSetMenu( mainMenu );
@@ -209,11 +212,13 @@ namespace DDG
    void Viewer :: mToggleAlignment( void )
    {
       align = !align;
+      if( align ) fixBoundary = false;
    }
    
    void Viewer :: mToggleFixedBoundary( void )
    {
       fixBoundary = !fixBoundary;
+      if( fixBoundary ) align = false;
    }
    
    void Viewer :: mToggleNormalized( void )
@@ -230,6 +235,12 @@ namespace DDG
    void Viewer :: mWireframe( void )
    {
       mode = renderWireframe;
+      updateDisplayList();
+   }
+
+   void Viewer :: mToggleSingularities( void )
+   {
+      showSingularities = !showSingularities;
       updateDisplayList();
    }
 
@@ -312,6 +323,9 @@ namespace DDG
 	    break;
          case 'c':
 	    mToggleAlignment();
+	    break;
+         case '*':
+	    mToggleSingularities();
 	    break;
          // case 'n':
          //    mToggleNormalized();
@@ -484,11 +498,14 @@ namespace DDG
 
    void Viewer :: drawField( void )
    {
+      const double scale = (fieldDegree==1) ? 1. : .5;
+
       glPushAttrib( GL_ALL_ATTRIB_BITS );
 
       shader.disable();
 
-      glColor4f( 0., 0., 0., 1. );
+      glLineWidth(1.);
+      glColor4f( 0., 0., 0., .5 );
       glEnable( GL_BLEND );
       glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
@@ -498,7 +515,7 @@ namespace DDG
 	const double theta = vi->u.arg();
 	for( int i = 0; i < fieldDegree; i++ ){
 	   const Quaternion r(cos(theta/2+i*DDGConstants::PI/fieldDegree),sin(theta/2+i*DDGConstants::PI/fieldDegree)*n);
-	   const Vector L = vi->u.norm()*(r*Quaternion(0,rx)*r.conj()).im();
+	   const Vector L = scale*vi->u.norm()*(r*Quaternion(0,rx)*r.conj()).im();
 	   glBegin( GL_LINES );
 	   glVertex3dv( &c[0] );
 	   glVertex3dv( &(c+L)[0] );
@@ -506,27 +523,6 @@ namespace DDG
 	 }
       }
 
-
-      // PS: only for dual stuff
-//       for( FaceCIter f  = mesh.faces.begin();
-//                      f != mesh.faces.end();
-//                      f ++ )
-//       {
-//          if( f->isBoundary() ) continue;
-// 	 const Vector x = f->Xvector();
-// 	 const Vector c = (f->he->vertex->position+f->he->next->vertex->position+f->he->next->next->vertex->position)/3;
-// 	 const Vector n = f->normal;
-// 	 const double theta = f->u.arg();
-// 	 for( unsigned int i = 0; i < fieldDegree; i++ ){
-// 	   const Quaternion r(cos(theta/2+i*DDGConstants::PI/fieldDegree),sin(theta/2+i*DDGConstants::PI/fieldDegree)*n);
-// 	   const Vector L = f->u.norm()*(r*Quaternion(0,x)*r.conj()).im();
-// 	   glBegin( GL_LINES );
-// 	   glVertex3dv( &c[0] );
-// 	   glVertex3dv( &(c+L)[0] );
-// 	   glEnd();
-// 	 }
-//       }
-      // draw spheres at singularities
       glPopAttrib();
    }
 
@@ -595,7 +591,7 @@ namespace DDG
 
       shader.enable();
 
-      double radius = .02 * mesh.radius;
+      double radius = .005 * mesh.radius;
       int nSlices = 24;
       int nStacks = 24;
 
@@ -641,7 +637,10 @@ namespace DDG
       }
       if( fieldViz || hedgehogViz )
       {
-         drawSingularities();
+         if( showSingularities )
+         {
+            drawSingularities();
+         }
       }
       glEndList();
 

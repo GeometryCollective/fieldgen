@@ -1,6 +1,6 @@
 varying vec3 position;
 varying vec3 normal;
-varying vec3 diffuseColor;
+varying vec3 color;
 
 void main()
 {	
@@ -8,5 +8,5 @@ void main()
 
    position = gl_Vertex.xyz;
    normal = gl_Normal.xyz;
-   diffuseColor = gl_Color.rgb;
+   color = gl_Color.xyz;
 }

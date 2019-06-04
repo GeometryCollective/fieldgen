@@ -2,7 +2,7 @@ uniform vec3 eye;
 uniform vec3 light;
 varying vec3 position;
 varying vec3 normal;
-varying vec3 diffuseColor;
+varying vec3 color;
 
 float diffuse( vec3 N, vec3 L )
 {
@@ -31,7 +31,7 @@ void main()
    vec3 R = 2.*dot(L,N)*N - L;
    vec3 one = vec3( 1., 1., 1. );
 
-   gl_FragColor.rgb = diffuse(N,L)*diffuseColor + .5*specular(N,L,E)*one + .5*fresnel(N,E)*one;
+   gl_FragColor.rgb = diffuse(N,L)*color + .5*specular(N,L,E)*one + .75*fresnel(N,E)*one;
    gl_FragColor.a = 1.;
 }
 

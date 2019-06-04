@@ -67,6 +67,7 @@ namespace DDG
 	 static void mSmoothField( void );
 	 static void mToggleAlignment( void );
 	 static void mToggleFixedBoundary( void );
+	 static void mToggleSingularities( void );
 	 static void mToggleHedgehog( void );
 	 static void mToggleNormalized( void );
          static void mResetMesh( void );
@@ -95,7 +96,8 @@ namespace DDG
             menuToggleAlignment,
             menuToggleFixedBoundary,
             menuToggleNormalized,
-            menuToggleHedgehog
+            menuToggleHedgehog,
+            menuToggleSingularities
          };
 
          // draw state
@@ -109,6 +111,7 @@ namespace DDG
          // current render mode
 	 static bool fieldViz;
          static bool hedgehogViz;
+         static bool showSingularities;
 
          static void storeViewerState( void );
          static void restoreViewerState( void );
