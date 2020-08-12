@@ -29,7 +29,7 @@ TARGET = fieldviz
 CLTARGET = fieldgen
 CC = g++
 LD = g++
-CFLAGS = -g -Wall -Wno-deprecated -Werror -Wno-error=deprecated-declarations -ansi -pedantic  $(DDG_INCLUDE_PATH) -I./include -I./src
+CFLAGS = -g -std=c++11 -Wall -Wno-deprecated -Werror -Wno-error=deprecated-declarations -ansi -pedantic  $(DDG_INCLUDE_PATH) -I./include -I./src
 LFLAGS = -g -Wall -Wno-deprecated -Werror -pedantic $(DDG_LIBRARY_PATH)
 LIBS = $(DDG_OPENGL_LIBS) $(DDG_SUITESPARSE_LIBS) $(DDG_BLAS_LIBS)
 CLLIBS = $(DDG_SUITESPARSE_LIBS) $(DDG_BLAS_LIBS)
