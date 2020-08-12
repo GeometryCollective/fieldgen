@@ -56,7 +56,7 @@ obj/Complex.o: src/Complex.cpp include/Complex.h
 obj/DenseMatrix.o: src/DenseMatrix.cpp include/DenseMatrix.h include/Types.h src/DenseMatrix.inl include/DenseMatrix.h include/LinearContext.h include/Quaternion.h include/Vector.h include/SparseMatrix.h include/Complex.h src/SparseMatrix.inl include/Real.h include/Complex.h include/Utility.h 
 	$(CC) $(CFLAGS) -c src/DenseMatrix.cpp -o obj/DenseMatrix.o
 
-obj/Edge.o: src/Edge.cpp include/Edge.h include/Types.h include/Quaternion.h include/Vector.h include/Complex.h include/Mesh.h include/HalfEdge.h include/Vertex.h include/Edge.h include/Face.h include/AliasTable.h include/Halfedge.h 
+obj/Edge.o: src/Edge.cpp include/Edge.h include/Types.h include/Quaternion.h include/Vector.h include/Complex.h include/Mesh.h include/HalfEdge.h include/Vertex.h include/Edge.h include/Face.h include/AliasTable.h
 	$(CC) $(CFLAGS) -c src/Edge.cpp -o obj/Edge.o
 
 obj/Face.o: src/Face.cpp include/Face.h include/Types.h include/Complex.h include/Vector.h include/Mesh.h include/HalfEdge.h include/Quaternion.h include/Vertex.h include/Edge.h include/Face.h include/AliasTable.h include/Vector.h include/Utility.h 
