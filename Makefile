@@ -10,7 +10,7 @@
 # DDG_OPENGL_LIBS       = -framework OpenGL -framework GLUT
 
 # Linux
-DDG_INCLUDE_PATH      = 
+DDG_INCLUDE_PATH      =
 DDG_LIBRARY_PATH      =	
 DDG_BLAS_LIBS         = -llapack -lblas -lgfortran
 DDG_SUITESPARSE_LIBS  = -lspqr -lcholmod -lmetis -lcolamd -lccolamd -lcamd -lamd -lm

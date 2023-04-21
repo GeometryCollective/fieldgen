@@ -95,6 +95,7 @@ namespace DDG
             menuZoomOut,
             menuScreenshot,
             menuToggleAlignment,
+            menuToggleVecAlignment,
             menuToggleFixedBoundary,
             menuToggleHedgehog,
             menuToggleSingularities
@@ -129,6 +130,7 @@ namespace DDG
          // field parameters
          static int fieldDegree;  // degree k of k-field
          static bool align;       // toggles alignment with curvature
+         static bool alignToGivenField; // toggles alignment with a given alignment field
          static bool fixBoundary; // toggles fixed boundary vectors (Dirichlet conditions)
          static double t;         // amount of alignment
          static double s;         // determines smoothness energy (between -1,1)
