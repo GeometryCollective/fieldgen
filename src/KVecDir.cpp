@@ -21,6 +21,8 @@ namespace DDG{
 
   // f and t are projected onto plane normal to N as fProj and tProj. Returns angle from fProj to tProj
   inline const double ProjectionAngle( const Vector& f, const Vector& t, const Vector& N ){
+    if (dot(f, N) == 0 || dot(t, N) == 0) return 0;
+
     Vector fProj = f;
     if (dot(f,N) > 0) fProj = (f/dot(f,N)) - N;
     else if (dot(f,N) < 0) fProj = N - (f/dot(f,N));
@@ -29,7 +31,7 @@ namespace DDG{
     if (dot(t,N) > 0) tProj = (t/dot(t,N)) - N;
     else if (dot(t,N) < 0) tProj = N - (t/dot(t,N));
 
-    return acos(dot(fProj, tProj));
+    return acos(dot(fProj.unit(), tProj.unit()));
   }
 
   inline const double Clip( const double value, const double lower, const double upper ){
