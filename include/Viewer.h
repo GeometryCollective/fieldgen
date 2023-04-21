@@ -66,7 +66,8 @@ namespace DDG
          
          // menu functions
 	 static void mSmoothField( void );
-	 static void mToggleAlignment( void );
+    static void mToggleAlignment( void );
+	 static void mToggleGivenAlignment( void );
 	 static void mToggleFixedBoundary( void );
 	 static void mToggleSingularities( void );
 	 static void mToggleHedgehog( void );

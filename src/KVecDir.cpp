@@ -99,6 +99,17 @@ namespace DDG{
     ComputeConnectionAndHopf();
   }
 
+  void Mesh::setupqForGivenVectorAlignment( void ){
+    for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ ){
+      if (vi->alignment.norm() == 0)
+      {
+        vi->q = Complex(0.0, 0.0);
+        continue;
+      }
+      vi->q = Complex(0, Angle( vi->alignment.unit(), vi->Xvector().unit(), vi->normal ));
+    }
+  }
+
   void Mesh::ComputeEnergyAndMass( const unsigned int n, const double s ){
 
     // gotta zero out all working slots
@@ -430,6 +441,73 @@ namespace DDG{
     cerr << "corresponding t value: " << 1./(1.+normU) << endl;
     return 1./(1.+normU);
   }
+
+  // alignment with q. q will be recalculated
+  double Mesh::SmoothestGivenVectorAlignment( unsigned int n, double s, double lambda, bool dir ){
+    cerr << "Mesh::SmoothestGivenVectorAlignment: n: " << n << " s: " << s << " lambda: " << lambda << endl;
+    if( n != 1 ){
+      cerr << "alignment code requires n == 1; n is: " << n << endl;
+      return 0;
+    }
+    double t0 = wallClock();
+
+    const unsigned int nv = vertices.size();
+    SparseMatrix<Complex> A( nv, nv ), M( nv, nv );
+
+    SetupEnergyMatrix( A, M, n, s, lambda );
+
+    // find solution to Poisson problem
+    DenseMatrix<Complex> u(nv,1), q(nv,1);
+
+    setupqForGivenVectorAlignment();
+
+    // load q; to simplify the t computation we need to normalize q
+    unsigned int i = 0;
+    for( VertexIter vi = vertices.begin(); vi != vertices.end(); i++, vi++ ){
+      q(vi->id,0) = ( n == 2 ? vi->q : vi->q*vi->q );
+    }
+    {
+      u = M.multiply( q );
+      double normQ = 0;
+      for( i = 0; i < nv; i++ ) normQ += (q(i,0).conj()*u(i,0)).re;
+      if (normQ != 0)
+      {
+        q = u/sqrt( normQ );
+      }
+    }
+
+    solvePositiveDefinite( A, u, q );
+
+    // load result
+    i = 0; for( VertexIter vi = vertices.begin(); vi != vertices.end(); i++, vi++ ) vi->u = u(vi->id,0);
+
+    double normU = 0;
+    {
+      q = M*u;
+      for( i = 0; i < nv; i++ ){
+        normU += (u(i,0).conj()*q(i,0)).re;
+      }
+      if (normU >= 0)
+      {
+        normU = sqrt( normU );
+      }
+    }
+
+    ComputeIndices( n );
+
+    // take roots (and possibly normalize) vertex data
+    for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ ){
+      const Complex z = vi->u;
+      vi->u = Phase(z.arg()/n) * ( dir ? 1. : pow(z.norm(),1./n) );
+    }
+    double t1 = wallClock(); printTiming( "compute aligned field", t1-t0 );
+    cerr << "triangles: " << faces.size() << endl;
+
+    // let the caller know what the actual t value was
+    cerr << "corresponding t value: " << 1./(1.+normU) << endl;
+    return 1./(1.+normU);
+  }
+
 
   // determine singularity index of each triangle
   void Mesh::ComputeIndices( const unsigned int n ) {

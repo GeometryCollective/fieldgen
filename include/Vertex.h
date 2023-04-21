@@ -56,6 +56,8 @@ namespace DDG
     // Hopf differential as that is the canonical use of this)
     Complex q;
 
+    Vector alignment;
+
     // returns the kVec in world space
     const Vector kVec( void ) const;
 

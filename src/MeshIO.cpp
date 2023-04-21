@@ -163,6 +163,7 @@ namespace DDG
          if( token == "vt" ) { readTexCoord( ss, data ); continue; } // texture coordinate
          if( token == "vn" ) { readNormal  ( ss, data ); continue; } // vertex normal
          if( token == "f"  ) { readFace    ( ss, data ); continue; } // face
+         if( token == "vf" ) { readAlignment( ss, data ); continue; } // vertex vector alignment
          if( token[0] == '#' ) continue; // comment
          if( token == "o" ) continue; // object name
          if( token == "g" ) continue; // group name
@@ -235,6 +236,7 @@ namespace DDG
          VertexIter newVertex = mesh.vertices.insert( mesh.vertices.end(), Vertex() );
          newVertex->position = data.positions[ i ];
          newVertex->he = isolated.begin();
+         newVertex->alignment = data.alignments[i];
          indexToVertex[ i ] = newVertex;
       }
    
@@ -408,6 +410,15 @@ namespace DDG
       ss >> x >> y >> z;
    
       data.positions.push_back( Vector( x, y, z ));
+   }
+
+   void MeshIO :: readAlignment( stringstream& ss, MeshData& data )
+   {
+      double x, y, z;
+   
+      ss >> x >> y >> z;
+   
+      data.alignments.push_back( Vector( x, y, z ));
    }
    
    void MeshIO :: readTexCoord( stringstream& ss, MeshData& data )

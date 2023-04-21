@@ -43,6 +43,7 @@ namespace DDG
          static void readTexCoord( std::stringstream& ss, MeshData& data );
          static void readNormal  ( std::stringstream& ss, MeshData& data );
          static void readFace    ( std::stringstream& ss, MeshData& data );
+         static void readAlignment( std::stringstream& ss, MeshData& data );
          static Index parseFaceIndex( const std::string& token );
          static void preallocateMeshElements( const MeshData& data, Mesh& mesh );
          static void checkIsolatedVertices( const Mesh& Mesh );
@@ -81,6 +82,7 @@ namespace DDG
          std::vector<Vector> positions;
          std::vector<Vector> texcoords;
          std::vector<Vector> normals;
+         std::vector<Vector> alignments;
          std::vector< std::vector< Index > > indices;
    };
 }

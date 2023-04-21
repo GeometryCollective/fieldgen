@@ -26,6 +26,7 @@ namespace DDG
    Shader Viewer::shader;
    int Viewer::fieldDegree = 1;
    bool Viewer::align = false;
+   bool Viewer::alignToGivenField = false;
    bool Viewer::fixBoundary = false;
    double Viewer::t = 0.;
    double Viewer::s = 0.;
@@ -81,6 +82,7 @@ namespace DDG
       glutSetMenu( mainMenu );
       glutAddMenuEntry( "[u] Smooth Field",          menuSmoothField         );
       glutAddMenuEntry( "[c] Toggle Curvature",      menuToggleAlignment     );
+      glutAddMenuEntry( "[v] Toggle Given field",    menuToggleVecAlignment  );
       glutAddMenuEntry( "[b] Toggle Fixed Boundary", menuToggleFixedBoundary );
       glutAddMenuEntry( "[r] Reset Mesh",            menuResetMesh           );
       glutAddMenuEntry( "[w] Write Mesh",            menuWriteMesh           );
@@ -119,6 +121,9 @@ namespace DDG
             break;
          case( menuToggleAlignment ):
             mToggleAlignment();
+            break;
+         case( menuToggleVecAlignment ):
+            mToggleGivenAlignment();
             break;
          case( menuToggleFixedBoundary ):
             mToggleFixedBoundary();
@@ -160,18 +165,17 @@ namespace DDG
    
    void Viewer :: mSmoothField( void )
    {
-      static bool first_call = true;
-      if( first_call )
-      {
-         mesh.InitKVecDirData();
-         first_call = false;
-      }
+      mesh.InitKVecDirData();
 
       mesh.clearSingularities();
 
       if( align )
       {
          mesh.SmoothestCurvatureAlignment( fieldDegree, s, t, true );
+      }
+      else if( alignToGivenField )
+      {
+         mesh.SmoothestGivenVectorAlignment( fieldDegree, s, t, true );
       }
       else if( fixBoundary )
       {
@@ -207,13 +211,28 @@ namespace DDG
    void Viewer :: mToggleAlignment( void )
    {
       align = !align;
-      if( align ) fixBoundary = false;
+      if( align ){
+         fixBoundary = false;
+         alignToGivenField = false;
+      }
+   }
+
+   void Viewer :: mToggleGivenAlignment( void )
+   {
+      alignToGivenField = !alignToGivenField;
+      if( alignToGivenField ){
+         fixBoundary = false;
+         align = false;
+      }
    }
    
    void Viewer :: mToggleFixedBoundary( void )
    {
       fixBoundary = !fixBoundary;
-      if( fixBoundary ) align = false;
+      if( fixBoundary ){
+         align = false;
+         alignToGivenField = false;
+      }
    }
    
    void Viewer :: mSmoothShaded( void )
@@ -313,6 +332,9 @@ namespace DDG
 	    break;
          case 'c':
 	    mToggleAlignment();
+       break;
+         case 'v':
+       mToggleGivenAlignment();
 	    break;
          case '*':
 	    mToggleSingularities();
@@ -747,6 +769,14 @@ namespace DDG
       {
          stringstream ss;
          ss << "curvature alignment: " << (align?"on":"off");
+         drawString( ss.str(), 16, H-h );
+         h += hInc;
+      }
+
+      // display given field alignment
+      {
+         stringstream ss;
+         ss << "give field alignment: " << (alignToGivenField?"on":"off");
          drawString( ss.str(), 16, H-h );
          h += hInc;
       }
