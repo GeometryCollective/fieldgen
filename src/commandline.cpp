@@ -17,6 +17,7 @@ void printUsage(const std::string& programName)
              << "[--degree=n] "
              << "[--alignToCurvature] "
              << "[--alignToBoundary] "
+             << "[--alignToGivenField] "
              << "[--s=S] "
              << "[--t=T]"
              << std::endl;
@@ -38,7 +39,7 @@ bool parseArg(const std::string& arg, const std::string& searchStr, std::string&
 }
 
 void parseArgs(int argc, char *argv[], std::string& inputPath, std::string& outputPath,
-      int& degree, bool& alignToCurvature, bool& alignToBoundary, double& s, double& t)
+      int& degree, bool& alignToCurvature, bool& alignToBoundary, bool& alignToGivenField, double& s, double& t)
 {
    if (argc < 3) {
       // input and/or output path not specified
@@ -56,6 +57,7 @@ void parseArgs(int argc, char *argv[], std::string& inputPath, std::string& outp
          if (parseArg(argv[i], "--degree=", degreeStr)) degree = std::stoi(degreeStr);
          if (doesArgExist(argv[i], "--alignToCurvature")) alignToCurvature = true;
          if (doesArgExist(argv[i], "--alignToBoundary")) alignToBoundary = true;
+         if (doesArgExist(argv[i], "--alignToGivenField")) alignToGivenField = true;
          if (parseArg(argv[i], "--s=", sStr)) s = std::atof(sStr.c_str());
          if (parseArg(argv[i], "--t=", tStr)) t = std::atof(tStr.c_str());
       }
@@ -75,9 +77,10 @@ int main( int argc, char** argv )
    int degree = 1;
    bool alignToCurvature = false;
    bool alignToBoundary = false;
+   bool alignToGivenField = false;
    double s = 0.;
    double t = 0.;
-   parseArgs( argc, argv, inputPath, outputPath, degree, alignToCurvature, alignToBoundary, s, t );
+   parseArgs( argc, argv, inputPath, outputPath, degree, alignToCurvature, alignToBoundary, alignToGivenField, s, t );
 
    Mesh mesh;
 
@@ -90,6 +93,10 @@ int main( int argc, char** argv )
    if( alignToCurvature )
    {
       mesh.SmoothestCurvatureAlignment( degree, s, t, true );
+   }
+   if( alignToGivenField )
+   {
+      mesh.SmoothestGivenVectorAlignment( degree, s, t, true );
    }
    else if( alignToBoundary )
    {
