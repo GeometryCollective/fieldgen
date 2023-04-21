@@ -45,7 +45,7 @@ $(TARGET): $(OBJS)
 	$(LD) $(LFLAGS) $(OBJS) $(LIBS) -lumfpack -L/usr/local/lib -I/usr/local/include -o $(TARGET) 
 
 commandline: $(CLOBJS)
-	$(LD) $(LFLAGS) $(CLOBJS) $(CLLIBS) -o $(CLTARGET)
+	$(LD) $(LFLAGS) $(CLOBJS) $(CLLIBS) -lumfpack -L/usr/local/lib -I/usr/local/include -o $(CLTARGET)
 
 obj/Camera.o: src/Camera.cpp include/Camera.h include/Quaternion.h include/Vector.h 
 	$(CC) $(CFLAGS) -c src/Camera.cpp -o obj/Camera.o

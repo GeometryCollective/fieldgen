@@ -236,7 +236,7 @@ namespace DDG
          VertexIter newVertex = mesh.vertices.insert( mesh.vertices.end(), Vertex() );
          newVertex->position = data.positions[ i ];
          newVertex->he = isolated.begin();
-         newVertex->alignment = data.alignments[i];
+         // newVertex->alignment = data.alignments[i]; // TODO : This line has issues
          indexToVertex[ i ] = newVertex;
       }
    
