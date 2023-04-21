@@ -71,7 +71,7 @@ namespace DDG{
 	// in the edge tangent space (distinguished direction is along edge) q is purely real
 	// ei->q = -Complex(acos(cs)/2*le,0);
 	ei->q = -Complex(Angle( ei->he->face->normal, ei->he->flip->face->normal, ei->he->geom().unit() )/2*le,0);
-	// just making sure...
+	// just making sure... 
 	assert( !isnan(ei->q.re) );
       }
 
@@ -121,7 +121,20 @@ namespace DDG{
         vi->q = Complex(0.0, 0.0);
         continue;
       }
-      vi->q = Phase(ProjectionAngle( vi->alignment.unit(), vi->Xvector().unit(), vi->normal ));
+
+      const Vector n = vi->normal.unit();
+      const Vector t1 = vi->Xvector().unit();
+      const Vector t2 = cross( n, t1 );
+      const Vector v = vi->alignment.unit();
+      const Vector v_proj = v - dot(v, n) * n / dot(n, n);
+
+      double x = (t1[0]*t2[1] - t1[1]*t2[0]) != 0 ? (v_proj[0]*t2[1] - v_proj[1]*t2[0])/(t1[0]*t2[1] - t1[1]*t2[0]) : 0.0;
+      double y = t2[1] != 0 ? (v_proj[1] - x*t1[1])/t2[1] : 0.0 ;
+
+      double norm = sqrt(pow(x,2) + pow(y,2));
+      
+      // vi->q = Phase(ProjectionAngle( vi->alignment.unit(), vi->Xvector().unit(), vi->normal ));
+      vi->q = Complex(x/norm, y/norm);
     }
   }
 
@@ -220,6 +233,7 @@ namespace DDG{
       Mj.push_back( ColumnEntry( j, Complex(vj->m,0) ));
 
       HalfEdgeCIter he = vj->he;
+
       do {
         EdgeCIter e = he->edge;
         VertexIter vi = he->flip->vertex;
@@ -227,6 +241,7 @@ namespace DDG{
 
         Complex Aij = e->Es + shift*e->m;
         Complex Mij = e->m;
+
         if( he->edge->he == he ){
           Aij = Aij.conj();
           Mij = Mij.conj();
