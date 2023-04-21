@@ -9,9 +9,10 @@
 
 #ifndef DDG_VIEWER_H
 #define DDG_VIEWER_H
+#define GL_GLEXT_PROTOTYPES
 
 #include <string>
-#include <GLUT/glut.h>
+#include <GL/freeglut.h>
 #include "Mesh.h"
 #include "Camera.h"
 #include "Shader.h"

@@ -213,7 +213,7 @@ namespace DDG{
       } while( he != vj->he );
     }
 
-    for( int j = 0; j < nV; j++ )
+    for( unsigned int j = 0; j < nV; j++ )
     {
        A.appendCompressedColumn( cA[j] );
        M.appendCompressedColumn( cM[j] );
@@ -284,7 +284,7 @@ namespace DDG{
        } while( he != vj->he );
     }
 
-    for( int j = 0; j < nV; j++ )
+    for( unsigned int j = 0; j < nV; j++ )
     {
        A.appendCompressedColumn( cA[j] );
        M.appendCompressedColumn( cM[j] );

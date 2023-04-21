@@ -121,7 +121,7 @@ namespace DDG
 
       for( VertexCIter v = mesh.vertices.begin(); v != mesh.vertices.end(); v++ )
       {
-         const Vector c = v->position; // vertex location
+         // const Vector c = v->position; // vertex location
          const Vector N = v->normal; // normal
          const Vector e1 = v->Xvector().unit(); // bases for tangent plane
          const Vector e2 = cross( N, e1 );

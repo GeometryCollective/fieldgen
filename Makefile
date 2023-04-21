@@ -3,18 +3,18 @@
 # Specify library locations here (add or remove "#" marks to comment/uncomment lines for your platform)
 
 # Mac OS X
-DDG_INCLUDE_PATH      = -I/usr/local/include
-DDG_LIBRARY_PATH      = -L/usr/local/lib
-DDG_BLAS_LIBS         = -framework Accelerate
-DDG_SUITESPARSE_LIBS  = -lspqr -lumfpack -lcholmod -lmetis -lcolamd -lccolamd -lcamd -lamd -lm -lsuitesparseconfig
-DDG_OPENGL_LIBS       = -framework OpenGL -framework GLUT
+# DDG_INCLUDE_PATH      = -I/usr/local/include
+# DDG_LIBRARY_PATH      = -L/usr/local/lib
+# DDG_BLAS_LIBS         = -framework Accelerate
+# DDG_SUITESPARSE_LIBS  = -lspqr -lumfpack -lcholmod -lmetis -lcolamd -lccolamd -lcamd -lamd -lm -lsuitesparseconfig
+# DDG_OPENGL_LIBS       = -framework OpenGL -framework GLUT
 
-# # Linux
-# DDG_INCLUDE_PATH      =
-# DDG_LIBRARY_PATH      =
-# DDG_BLAS_LIBS         = -llapack -lblas -lgfortran
-# DDG_SUITESPARSE_LIBS  = -lspqr -lcholmod -lmetis -lcolamd -lccolamd -lcamd -lamd -lm
-# DDG_OPENGL_LIBS       = -lglut -lGL -lGLU -lX11
+# Linux
+DDG_INCLUDE_PATH      = 
+DDG_LIBRARY_PATH      =	
+DDG_BLAS_LIBS         = -llapack -lblas -lgfortran
+DDG_SUITESPARSE_LIBS  = -lspqr -lcholmod -lmetis -lcolamd -lccolamd -lcamd -lamd -lm
+DDG_OPENGL_LIBS       = -lglut -lGL -lGLU -lX11
 
 # # Windows / Cygwin
 # DDG_INCLUDE_PATH      = -I/usr/include/opengl -I/usr/include/suitesparse
@@ -39,10 +39,10 @@ CLLIBS = $(DDG_SUITESPARSE_LIBS) $(DDG_BLAS_LIBS)
 OBJS = obj/Camera.o obj/Complex.o obj/DenseMatrix.o obj/Edge.o obj/Face.o obj/HalfEdge.o obj/Image.o obj/KVecDir.o obj/LinearContext.o obj/Mesh.o obj/MeshIO.o obj/Quaternion.o obj/Real.o obj/SectionIntegrals.o obj/Shader.o obj/SparseMatrix.o obj/Vector.o obj/Vertex.o obj/Viewer.o obj/main.o
 CLOBJS = obj/Complex.o obj/DenseMatrix.o obj/Edge.o obj/Face.o obj/HalfEdge.o obj/KVecDir.o obj/LinearContext.o obj/Mesh.o obj/MeshIO.o obj/Quaternion.o obj/Real.o obj/SectionIntegrals.o obj/SparseMatrix.o obj/Vector.o obj/Vertex.o obj/commandline.o
 
-all: $(TARGET)
+all: $(TARGET) 
 
 $(TARGET): $(OBJS)
-	$(LD) $(LFLAGS) $(OBJS) $(LIBS) -o $(TARGET)
+	$(LD) $(LFLAGS) $(OBJS) $(LIBS) -o $(TARGET) 
 
 commandline: $(CLOBJS)
 	$(LD) $(LFLAGS) $(CLOBJS) $(CLLIBS) -o $(CLTARGET)
