@@ -42,7 +42,7 @@ CLOBJS = obj/Complex.o obj/DenseMatrix.o obj/Edge.o obj/Face.o obj/HalfEdge.o ob
 all: $(TARGET) 
 
 $(TARGET): $(OBJS)
-	$(LD) $(LFLAGS) $(OBJS) $(LIBS) -o $(TARGET) 
+	$(LD) $(LFLAGS) $(OBJS) $(LIBS) -lumfpack -L/usr/local/lib -I/usr/local/include -o $(TARGET) 
 
 commandline: $(CLOBJS)
 	$(LD) $(LFLAGS) $(CLOBJS) $(CLLIBS) -o $(CLTARGET)
