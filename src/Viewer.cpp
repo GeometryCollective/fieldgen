@@ -27,6 +27,7 @@ namespace DDG
    int Viewer::fieldDegree = 1;
    bool Viewer::align = false;
    bool Viewer::alignToGivenField = false;
+   bool Viewer::showInputField = false;
    bool Viewer::fixBoundary = false;
    double Viewer::t = 0.;
    double Viewer::s = 0.;
@@ -83,6 +84,7 @@ namespace DDG
       glutAddMenuEntry( "[u] Smooth Field",          menuSmoothField         );
       glutAddMenuEntry( "[c] Toggle Curvature",      menuToggleAlignment     );
       glutAddMenuEntry( "[v] Toggle Given field",    menuToggleVecAlignment  );
+      glutAddMenuEntry( "[n] Toggle Input field",    menuToggleInpAlignment  );
       glutAddMenuEntry( "[b] Toggle Fixed Boundary", menuToggleFixedBoundary );
       glutAddMenuEntry( "[r] Reset Mesh",            menuResetMesh           );
       glutAddMenuEntry( "[w] Write Mesh",            menuWriteMesh           );
@@ -124,6 +126,9 @@ namespace DDG
             break;
          case( menuToggleVecAlignment ):
             mToggleGivenAlignment();
+            break;
+         case( menuToggleInpAlignment ):
+            mToggleInputAlignment();
             break;
          case( menuToggleFixedBoundary ):
             mToggleFixedBoundary();
@@ -181,6 +186,10 @@ namespace DDG
       {
          mesh.ComputeSmoothestFixedBoundary( fieldDegree, s, true );
       }
+      else if ( showInputField )
+      {
+         mesh.ComputeInputVectorFields();
+      }
       else
       {
          mesh.ComputeSmoothest( fieldDegree, s, true );
@@ -214,6 +223,7 @@ namespace DDG
       if( align ){
          fixBoundary = false;
          alignToGivenField = false;
+         showInputField = false;
       }
    }
 
@@ -223,6 +233,17 @@ namespace DDG
       if( alignToGivenField ){
          fixBoundary = false;
          align = false;
+         showInputField = false;
+      }
+   }
+
+   void Viewer :: mToggleInputAlignment( void )
+   {
+      showInputField = !showInputField;
+      if( showInputField ){
+         fixBoundary = false;
+         align = false;
+         alignToGivenField = false;
       }
    }
    
@@ -232,6 +253,7 @@ namespace DDG
       if( fixBoundary ){
          align = false;
          alignToGivenField = false;
+         showInputField = false;
       }
    }
    
@@ -336,6 +358,9 @@ namespace DDG
          case 'v':
        mToggleGivenAlignment();
 	    break;
+         case 'n':
+       mToggleInputAlignment();
+       break;
          case '*':
 	    mToggleSingularities();
 	    break;
@@ -776,7 +801,15 @@ namespace DDG
       // display given field alignment
       {
          stringstream ss;
-         ss << "give field alignment: " << (alignToGivenField?"on":"off");
+         ss << "given field alignment: " << (alignToGivenField?"on":"off");
+         drawString( ss.str(), 16, H-h );
+         h += hInc;
+      }
+
+      // display input vector field
+      {
+         stringstream ss;
+         ss << "show input field: " << (showInputField?"on":"off");
          drawString( ss.str(), 16, H-h );
          h += hInc;
       }

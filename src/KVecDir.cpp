@@ -508,6 +508,14 @@ namespace DDG{
     return 1./(1.+normU);
   }
 
+  // converts u to given alingment fields
+  void Mesh::ComputeInputVectorFields( void ){
+    setupqForGivenVectorAlignment();
+    for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ ){
+      vi->u = vi->q;
+    }
+    return;
+  }
 
   // determine singularity index of each triangle
   void Mesh::ComputeIndices( const unsigned int n ) {

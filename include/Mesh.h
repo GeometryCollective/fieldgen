@@ -102,6 +102,7 @@ namespace DDG
 					const double lambda, const bool dir );
     double SmoothestGivenVectorAlignment( const unsigned int n, const double s,
           const double lambda, const bool dir );
+    void ComputeInputVectorFields( void );
     // setup q for givenVectorAlignment
     void setupqForGivenVectorAlignment( void );
 
