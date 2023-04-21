@@ -106,7 +106,7 @@ namespace DDG{
         vi->q = Complex(0.0, 0.0);
         continue;
       }
-      vi->q = Complex(0, Angle( vi->alignment.unit(), vi->Xvector().unit(), vi->normal ));
+      vi->q = Phase(Angle( vi->alignment.unit(), vi->Xvector().unit(), vi->normal ));
     }
   }
 
@@ -470,7 +470,7 @@ namespace DDG{
       u = M.multiply( q );
       double normQ = 0;
       for( i = 0; i < nv; i++ ) normQ += (q(i,0).conj()*u(i,0)).re;
-      if (normQ != 0)
+      if (normQ > 0)
       {
         q = u/sqrt( normQ );
       }
