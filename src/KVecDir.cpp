@@ -19,6 +19,19 @@ namespace DDG{
     return atan2( dot(cross(f, t), N), dot(f, t) );
   }
 
+  // f and t are projected onto plane normal to N as fProj and tProj. Returns angle from fProj to tProj
+  inline const double ProjectionAngle( const Vector& f, const Vector& t, const Vector& N ){
+    Vector fProj = f;
+    if (dot(f,N) > 0) fProj = (f/dot(f,N)) - N;
+    else if (dot(f,N) < 0) fProj = N - (f/dot(f,N));
+    
+    Vector tProj = t;
+    if (dot(t,N) > 0) tProj = (t/dot(t,N)) - N;
+    else if (dot(t,N) < 0) tProj = N - (t/dot(t,N));
+
+    return acos(dot(fProj, tProj));
+  }
+
   inline const double Clip( const double value, const double lower, const double upper ){
     return value < lower ? lower : ( value > upper ? upper : value );
   }
@@ -106,7 +119,7 @@ namespace DDG{
         vi->q = Complex(0.0, 0.0);
         continue;
       }
-      vi->q = Phase(Angle( vi->alignment.unit(), vi->Xvector().unit(), vi->normal ));
+      vi->q = Phase(ProjectionAngle( vi->alignment.unit(), vi->Xvector().unit(), vi->normal ));
     }
   }
 
