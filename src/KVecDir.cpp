@@ -145,20 +145,23 @@ namespace DDG{
       do{
           curVertexIter = he->vertex;
 
-          FaceIter fi = he->face;
-          HalfEdgeIter heToCompare = he->next->next;
-          Vector faceAliVec = fi->alignment.unit();
-          std::cout << dot(faceAliVec, fi->normal) << std::endl;
-          assert(dot(faceAliVec, fi->normal) == 0);
-          Vector heVec = heToCompare->geom().unit();
+          if (fi->alignment.norm() != 0)
+          {
+            FaceIter fi = he->face;
+            HalfEdgeIter heToCompare = he->next->next;
+            Vector faceAliVec = fi->alignment.unit();
+            std::cout << dot(faceAliVec, fi->normal) << std::endl;
+            assert(dot(faceAliVec, fi->normal) == 0);
+            Vector heVec = heToCompare->geom().unit();
 
-          Vector crosprod = cross(heVec, faceAliVec);
-          Complex heToAlignment = Phase(vi->s*asin(crosprod.norm()));
-          if (signbit(dot(crosprod, fi->normal)))
-            heToAlignment = heToAlignment*Phase(M_PI);
-          Complex curComplex = heToAlignment*Phase(vi->AngleOfEdge(heToCompare));
+            Vector crosprod = cross(heVec, faceAliVec);
+            Complex heToAlignment = Phase(vi->s*asin(crosprod.norm()));
+            if (signbit(dot(crosprod, fi->normal)))
+              heToAlignment = heToAlignment*Phase(M_PI);
+            Complex curComplex = heToAlignment*Phase(vi->AngleOfEdge(heToCompare));
 
-          vertexQ += fi->area()*curComplex;
+            vertexQ += fi->area()*curComplex;
+          }
 
           he = he->next->flip->next;
       }while(curVertexIter != initialVertexIter);
