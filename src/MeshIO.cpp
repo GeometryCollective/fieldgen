@@ -164,7 +164,7 @@ namespace DDG
          if( token == "vn" ) { readNormal  ( ss, data ); continue; } // vertex normal
          if( token == "f"  ) { readFace    ( ss, data ); continue; } // face
          if( token == "vf" ) { readAlignment( ss, data ); continue; } // vertex vector alignment
-         if( token == "#attrs" ) { readFaceAlignment( ss, data ); continue; } // face vector alignment
+         if( token == "#attrsf" ) { readFaceAlignment( ss, data ); continue; } // face vector alignment
          if( token[0] == '#' ) continue; // comment
          if( token == "o" ) continue; // object name
          if( token == "g" ) continue; // group name
