@@ -164,6 +164,7 @@ namespace DDG
          if( token == "vn" ) { readNormal  ( ss, data ); continue; } // vertex normal
          if( token == "f"  ) { readFace    ( ss, data ); continue; } // face
          if( token == "vf" ) { readAlignment( ss, data ); continue; } // vertex vector alignment
+         if( token == "#attrs" ) { readFaceAlignment( ss, data ); continue; } // face vector alignment
          if( token[0] == '#' ) continue; // comment
          if( token == "o" ) continue; // object name
          if( token == "g" ) continue; // group name
@@ -236,10 +237,10 @@ namespace DDG
          VertexIter newVertex = mesh.vertices.insert( mesh.vertices.end(), Vertex() );
          newVertex->position = data.positions[ i ];
          newVertex->he = isolated.begin();
-         if (data.alignments.size() != 0)
-         {
-            newVertex->alignment = data.alignments[i];
-         }
+         // if (data.alignments.size() != 0)
+         // {
+         //    newVertex->alignment = data.alignments[i];
+         // }
          indexToVertex[ i ] = newVertex;
       }
    
@@ -262,6 +263,9 @@ namespace DDG
 
          // create a new face
          FaceIter newFace = mesh.faces.insert( mesh.faces.end(), Face());
+
+         // set the alignmet of the face
+         newFace->alignment = data.alignments[faceIndex];
 
          // create a new half edge for each edge of the current face
          vector< HalfEdgeIter > hes( N );
@@ -416,6 +420,15 @@ namespace DDG
    }
 
    void MeshIO :: readAlignment( stringstream& ss, MeshData& data )
+   {
+      double x, y, z;
+   
+      ss >> x >> y >> z;
+   
+      data.alignments.push_back( Vector( x, y, z ));
+   }
+
+   void MeshIO :: readFaceAlignment( stringstream& ss, MeshData& data )
    {
       double x, y, z;
    

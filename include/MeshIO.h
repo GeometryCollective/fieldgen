@@ -44,6 +44,7 @@ namespace DDG
          static void readNormal  ( std::stringstream& ss, MeshData& data );
          static void readFace    ( std::stringstream& ss, MeshData& data );
          static void readAlignment( std::stringstream& ss, MeshData& data );
+         static void readFaceAlignment( std::stringstream& ss, MeshData& data );
          static Index parseFaceIndex( const std::string& token );
          static void preallocateMeshElements( const MeshData& data, Mesh& mesh );
          static void checkIsolatedVertices( const Mesh& Mesh );

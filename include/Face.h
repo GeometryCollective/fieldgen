@@ -51,7 +51,11 @@ namespace DDG
     // index of this triangle
     int sing;
 
+    // vector field alignment in face
     Vector alignment;
+
+    // complex number of the above alignment vector with the curvature
+    Complex alignmentComplexNumber;
 
     Vector normal;
     void updateNormal( void );
