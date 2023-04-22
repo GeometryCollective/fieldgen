@@ -54,9 +54,6 @@ namespace DDG
     // vector field alignment in face
     Vector alignment;
 
-    // complex number of the above alignment vector with the curvature
-    Complex alignmentComplexNumber;
-
     Vector normal;
     void updateNormal( void );
     // returns the unit normal associated with this face; normal

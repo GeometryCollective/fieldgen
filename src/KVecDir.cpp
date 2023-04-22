@@ -116,25 +116,52 @@ namespace DDG{
 
   void Mesh::setupqForGivenVectorAlignment( void ){
     for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ ){
-      if (vi->alignment.norm() == 0)
-      {
-        vi->q = Complex(0.0, 0.0);
-        continue;
-      }
+      // Commented code for vertex based solution
+      // if (vi->alignment.norm() == 0)
+      // {
+      //   vi->q = Complex(0.0, 0.0);
+      //   continue;
+      // }
 
-      const Vector n = vi->normal.unit();
-      const Vector t1 = vi->Xvector().unit();
-      const Vector t2 = cross( n, t1 );
-      const Vector v = vi->alignment.unit();
-      const Vector v_proj = v - dot(v, n) * n / dot(n, n);
+      // const Vector n = vi->normal.unit();
+      // const Vector t1 = vi->Xvector().unit();
+      // const Vector t2 = cross( n, t1 );
+      // const Vector v = vi->alignment.unit();
+      // const Vector v_proj = v - dot(v, n) * n / dot(n, n);
 
-      double x = (t1[0]*t2[1] - t1[1]*t2[0]) != 0 ? (v_proj[0]*t2[1] - v_proj[1]*t2[0])/(t1[0]*t2[1] - t1[1]*t2[0]) : 0.0;
-      double y = t2[1] != 0 ? (v_proj[1] - x*t1[1])/t2[1] : 0.0 ;
+      // double x = (t1[0]*t2[1] - t1[1]*t2[0]) != 0 ? (v_proj[0]*t2[1] - v_proj[1]*t2[0])/(t1[0]*t2[1] - t1[1]*t2[0]) : 0.0;
+      // double y = t2[1] != 0 ? (v_proj[1] - x*t1[1])/t2[1] : 0.0 ;
 
-      double norm = sqrt(pow(x,2) + pow(y,2));
+      // double norm = sqrt(pow(x,2) + pow(y,2));
       
-      // vi->q = Phase(ProjectionAngle( vi->alignment.unit(), vi->Xvector().unit(), vi->normal ));
-      vi->q = Complex(x/norm, y/norm);
+      // // vi->q = Phase(ProjectionAngle( vi->alignment.unit(), vi->Xvector().unit(), vi->normal ));
+      // vi->q = Complex(x/norm, y/norm);
+
+      // Going over every face and averaging the complex number based on the areas 
+      HalfEdgeIter he = vi->he->next;
+      VertexIter initialVertexIter = he->vertex;
+      VertexIter curVertexIter;
+      Complex vertexQ;
+      do{
+          curVertexIter = he->vertex;
+
+          FaceIter fi = he->face;
+          HalfEdgeIter heToCompare = he->next->next;
+          Vector faceAliVec = fi->alignment.unit();
+          Vector heVec = heToCompare->geom().unit();
+
+          Vector crosprod = cross(heVec, faceAliVec);
+          Complex heToAlignment = Phase(asin(crosprod.norm()));
+          if (signbit(dot(crosprod, he->face->normal)))
+            heToAlignment = heToAlignment*Phase(M_PI);
+          Complex curComplex = heToAlignment*Phase(curVertexIter->AngleOfEdge(heToCompare));
+
+          vertexQ += fi->area()*curComplex;
+
+          he = he->next->flip->next;
+      }while(curVertexIter != initialVertexIter);
+
+      vi->q = vertexQ.unit();
     }
   }
 
