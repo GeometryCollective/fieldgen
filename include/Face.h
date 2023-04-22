@@ -51,6 +51,8 @@ namespace DDG
     // index of this triangle
     int sing;
 
+    Vector alignment;
+
     Vector normal;
     void updateNormal( void );
     // returns the unit normal associated with this face; normal
