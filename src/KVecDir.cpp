@@ -151,7 +151,7 @@ namespace DDG{
           Vector heVec = heToCompare->geom().unit();
 
           Vector crosprod = cross(heVec, faceAliVec);
-          Complex heToAlignment = Phase(asin(crosprod.norm()));
+          Complex heToAlignment = Phase(s*asin(crosprod.norm()));
           if (signbit(dot(crosprod, he->face->normal)))
             heToAlignment = heToAlignment*Phase(M_PI);
           Complex curComplex = heToAlignment*Phase(vi->AngleOfEdge(heToCompare));
