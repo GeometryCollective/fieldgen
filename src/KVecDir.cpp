@@ -150,8 +150,20 @@ namespace DDG{
           if (fi->alignment.norm() != 0)
           {
             Vector faceAliVec = fi->alignment.unit();
-            std::cout << dot(faceAliVec, fi->normal) << std::endl;
-            assert(dot(faceAliVec, fi->normal) == 0);
+
+            if (!dot(faceAliVec, fi->normal) == 0){
+              Vector f = faceAliVec;
+              Vector N = fi->normal;
+
+              Vector fProj = f;
+              if (dot(f,N) > 0) fProj = (f/dot(f,N)) - N;
+              else if (dot(f,N) < 0) fProj = N - (f/dot(f,N));
+
+              faceAliVec = fProj;
+            }
+
+            // std::cout << dot(faceAliVec, fi->normal) << std::endl;
+            // assert(dot(faceAliVec, fi->normal) == 0);
             Vector heVec = heToCompare->geom().unit();
 
             Vector crosprod = cross(heVec, faceAliVec);
