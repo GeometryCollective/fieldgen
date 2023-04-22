@@ -148,8 +148,8 @@ namespace DDG{
           FaceIter fi = he->face;
           HalfEdgeIter heToCompare = he->next->next;
           Vector faceAliVec = fi->alignment.unit();
-          assert(dot(faceAliVec, fi->normal) == 0);
           std::cout << dot(faceAliVec, fi->normal) << std::endl;
+          assert(dot(faceAliVec, fi->normal) == 0);
           Vector heVec = heToCompare->geom().unit();
 
           Vector crosprod = cross(heVec, faceAliVec);
