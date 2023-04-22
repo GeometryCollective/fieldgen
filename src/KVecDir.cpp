@@ -159,7 +159,7 @@ namespace DDG{
               if (dot(f,N) > 0) fProj = (f/dot(f,N)) - N;
               else if (dot(f,N) < 0) fProj = N - (f/dot(f,N));
 
-              faceAliVec = fProj;
+              faceAliVec = fProj.unit();
             }
 
             // std::cout << dot(faceAliVec, fi->normal) << std::endl;
