@@ -71,7 +71,7 @@ namespace DDG{
 	// in the edge tangent space (distinguished direction is along edge) q is purely real
 	// ei->q = -Complex(acos(cs)/2*le,0);
 	ei->q = -Complex(Angle( ei->he->face->normal, ei->he->flip->face->normal, ei->he->geom().unit() )/2*le,0);
-	// just making sure...
+	// just making sure... 
 	assert( !isnan(ei->q.re) );
       }
 
