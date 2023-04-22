@@ -154,7 +154,7 @@ namespace DDG{
           Complex heToAlignment = Phase(asin(crosprod.norm()));
           if (signbit(dot(crosprod, he->face->normal)))
             heToAlignment = heToAlignment*Phase(M_PI);
-          Complex curComplex = heToAlignment*Phase(curVertexIter->AngleOfEdge(heToCompare));
+          Complex curComplex = heToAlignment*Phase(vi->AngleOfEdge(heToCompare));
 
           vertexQ += fi->area()*curComplex;
 
