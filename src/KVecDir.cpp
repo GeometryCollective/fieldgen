@@ -71,7 +71,7 @@ namespace DDG{
 	// in the edge tangent space (distinguished direction is along edge) q is purely real
 	// ei->q = -Complex(acos(cs)/2*le,0);
 	ei->q = -Complex(Angle( ei->he->face->normal, ei->he->flip->face->normal, ei->he->geom().unit() )/2*le,0);
-	// just making sure... 
+	// just making sure...
 	assert( !isnan(ei->q.re) );
       }
 
@@ -116,69 +116,12 @@ namespace DDG{
 
   void Mesh::setupqForGivenVectorAlignment( void ){
     for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ ){
-      // Commented code for vertex based solution
-      // if (vi->alignment.norm() == 0)
-      // {
-      //   vi->q = Complex(0.0, 0.0);
-      //   continue;
-      // }
-
-      // const Vector n = vi->normal.unit();
-      // const Vector t1 = vi->Xvector().unit();
-      // const Vector t2 = cross( n, t1 );
-      // const Vector v = vi->alignment.unit();
-      // const Vector v_proj = v - dot(v, n) * n / dot(n, n);
-
-      // double x = (t1[0]*t2[1] - t1[1]*t2[0]) != 0 ? (v_proj[0]*t2[1] - v_proj[1]*t2[0])/(t1[0]*t2[1] - t1[1]*t2[0]) : 0.0;
-      // double y = t2[1] != 0 ? (v_proj[1] - x*t1[1])/t2[1] : 0.0 ;
-
-      // double norm = sqrt(pow(x,2) + pow(y,2));
-      
-      // // vi->q = Phase(ProjectionAngle( vi->alignment.unit(), vi->Xvector().unit(), vi->normal ));
-      // vi->q = Complex(x/norm, y/norm);
-
-      // Going over every face and averaging the complex number based on the areas 
-      HalfEdgeIter he = vi->he->next;
-      VertexIter initialVertexIter = he->vertex;
-      VertexIter curVertexIter;
-      Complex vertexQ;
-      do{
-          curVertexIter = he->vertex;
-
-          FaceIter fi = he->face;
-          HalfEdgeIter heToCompare = he->next->next;
-          if (fi->alignment.norm() != 0)
-          {
-            Vector faceAliVec = fi->alignment.unit();
-
-            if (!dot(faceAliVec, fi->normal) == 0){
-              Vector f = faceAliVec;
-              Vector N = fi->normal;
-
-              Vector fProj = f;
-              if (dot(f,N) > 0) fProj = (f/dot(f,N)) - N;
-              else if (dot(f,N) < 0) fProj = N - (f/dot(f,N));
-
-              faceAliVec = fProj.unit();
-            }
-
-            // std::cout << dot(faceAliVec, fi->normal) << std::endl;
-            // assert(dot(faceAliVec, fi->normal) == 0);
-            Vector heVec = heToCompare->geom().unit();
-
-            Vector crosprod = cross(heVec, faceAliVec);
-            Complex heToAlignment = Phase(vi->s*asin(crosprod.norm()));
-            if (signbit(dot(crosprod, fi->normal)))
-              heToAlignment = heToAlignment*Phase(M_PI);
-            Complex curComplex = heToAlignment*Phase(vi->AngleOfEdge(heToCompare));
-
-            vertexQ += fi->area()*curComplex;
-          }
-
-          he = he->next->flip->next;
-      }while(curVertexIter != initialVertexIter);
-
-      vi->q = vertexQ.unit();
+      if (vi->alignment.norm() == 0)
+      {
+        vi->q = Complex(0.0, 0.0);
+        continue;
+      }
+      vi->q = Phase(ProjectionAngle( vi->alignment.unit(), vi->Xvector().unit(), vi->normal ));
     }
   }
 
@@ -277,7 +220,6 @@ namespace DDG{
       Mj.push_back( ColumnEntry( j, Complex(vj->m,0) ));
 
       HalfEdgeCIter he = vj->he;
-
       do {
         EdgeCIter e = he->edge;
         VertexIter vi = he->flip->vertex;
@@ -285,7 +227,6 @@ namespace DDG{
 
         Complex Aij = e->Es + shift*e->m;
         Complex Mij = e->m;
-
         if( he->edge->he == he ){
           Aij = Aij.conj();
           Mij = Mij.conj();
