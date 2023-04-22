@@ -145,10 +145,10 @@ namespace DDG{
       do{
           curVertexIter = he->vertex;
 
+          FaceIter fi = he->face;
+          HalfEdgeIter heToCompare = he->next->next;
           if (fi->alignment.norm() != 0)
           {
-            FaceIter fi = he->face;
-            HalfEdgeIter heToCompare = he->next->next;
             Vector faceAliVec = fi->alignment.unit();
             std::cout << dot(faceAliVec, fi->normal) << std::endl;
             assert(dot(faceAliVec, fi->normal) == 0);
