@@ -326,10 +326,10 @@ namespace DDG
             s = max( -1.+1e-7, min( 1.-1e-7, s ));
             break;
          case 't':
-            t += .01;
+            t += 5;
             break;
          case 'T':
-            t -= .01;
+            t -= 5;
             break;
          case 'm':
             mSmoothShaded();
