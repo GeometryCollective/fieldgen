@@ -130,7 +130,7 @@ namespace DDG{
       // double v_proj_norm = v_proj.norm();
       // v_proj_norm = v_proj_norm != 0 ? v_proj_norm : 1;  
       vi->q = Complex(dot(v_proj, t1), dot(v_proj, t2));
-      vi -> q = vi -> q.unit();
+      vi->q = vi->q.unit()*100000;
     }
   }
 
@@ -540,6 +540,11 @@ namespace DDG{
     setupqForGivenVectorAlignment();
     for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ ){
       vi->u = vi->q;
+      if (vi->u.norm() != 0)
+      {
+        vi->u = vi->u.unit();
+      }
+      
     }
     return;
   }
