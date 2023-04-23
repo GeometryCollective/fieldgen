@@ -16,6 +16,8 @@ DDG_BLAS_LIBS         = -llapack -lblas -lgfortran
 DDG_SUITESPARSE_LIBS  = -lspqr -lcholmod -lmetis -lcolamd -lccolamd -lcamd -lamd -lm
 DDG_OPENGL_LIBS       = -lglut -lGL -lGLU -lX11
 
+FLAGS = -lGL -lGLU -lglut -lspqr -lcholmod -lmetis -lcolamd -lccolamd -lcamd -lamd -lm -llapack -lblas -lgfortran -lumfpack
+
 # # Windows / Cygwin
 # DDG_INCLUDE_PATH      = -I/usr/include/opengl -I/usr/include/suitesparse
 # DDG_LIBRARY_PATH      = -L/usr/lib/w32api -L/usr/lib/suitesparse
