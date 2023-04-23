@@ -493,32 +493,22 @@ namespace DDG{
       // q(vi->id,0) = ( n == 2 ? vi->q : vi->q*vi->q );
       q(vi->id,0) = vi -> q;
     }
-    {
-      u = M.multiply( q );
-      double normQ = 0;
-      for( i = 0; i < nv; i++ ) normQ += (q(i,0).conj()*u(i,0)).re;
-      if (normQ > 0)
-      {
-        q = u/sqrt( normQ );
-      }
-    }
+
+    q = M.multiply( q );
+    double normQ = 0;
+    for( i = 0; i < nv; i++ ) normQ += q(i,0).norm2();
+    normQ = sqrt(normQ);
+    q = q/normQ;
 
     solvePositiveDefinite( A, u, q );
 
+    double normU = 0;
+    for( i = 0; i < nv; i++ ) normU += u(i,0).norm2();
+    normU = sqrt( normU );
+    u = u/normU;
+
     // load result
     i = 0; for( VertexIter vi = vertices.begin(); vi != vertices.end(); i++, vi++ ) vi->u = u(vi->id,0);
-
-    double normU = 0;
-    {
-      q = M*u;
-      for( i = 0; i < nv; i++ ){
-        normU += (u(i,0).conj()*q(i,0)).re;
-      }
-      if (normU >= 0)
-      {
-        normU = sqrt( normU );
-      }
-    }
 
     ComputeIndices( n );
 
