@@ -105,7 +105,7 @@ Other commands can be accessed via the keyboard:
 |      `f` | draw faceted (with wireframe)
 |      `*` | show/hide singularities
 |      `w` | write solution to `out.obj`
-|  `` ` `` | take a screenshot
+|  `` ` `` | take a screenshot 
 | `escape` | exit
 
 **Note:** curvature alignment works only when the symmetry degree of the field is 2 or 4.

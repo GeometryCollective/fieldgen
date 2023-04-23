@@ -128,13 +128,13 @@ namespace DDG{
       const Vector v = vi->alignment.unit();
       const Vector v_proj = v - dot(v, n) * n / dot(n, n);
 
-      double x = (t1[0]*t2[1] - t1[1]*t2[0]) != 0 ? (v_proj[0]*t2[1] - v_proj[1]*t2[0])/(t1[0]*t2[1] - t1[1]*t2[0]) : 0.0;
-      double y = t2[1] != 0 ? (v_proj[1] - x*t1[1])/t2[1] : 0.0 ;
+      // double x = (t1[0]*t2[1] - t1[1]*t2[0]) != 0 ? (v_proj[0]*t2[1] - v_proj[1]*t2[0])/(t1[0]*t2[1] - t1[1]*t2[0]) : 0.0;
+      // double y = t2[1] != 0 ? (v_proj[1] - x*t1[1])/t2[1] : 0.0 ;
 
-      double norm = sqrt(pow(x,2) + pow(y,2));
+      // double norm = sqrt(pow(x,2) + pow(y,2));
       
       // vi->q = Phase(ProjectionAngle( vi->alignment.unit(), vi->Xvector().unit(), vi->normal ));
-      vi->q = Complex(x/norm, y/norm);
+      vi->q = Complex(dot(v_proj, t1), dot(v_proj, t2));
     }
   }
 
