@@ -125,9 +125,10 @@ namespace DDG
          const Vector N = v->normal; // normal
          const Vector e1 = v->Xvector().unit(); // bases for tangent plane
          const Vector e2 = cross( N, e1 );
+         const Vector e3 = cross( e2, N );
 
          const double theta = v->u.arg();
-         const Vector X = cos(theta)*e1 + sin(theta)*e2;
+         const Vector X = cos(theta)*e3 + sin(theta)*e2;
 
          int i = vertexIndex[v];
          out << "# field " << i << " " << X.x << " " << X.y << " " << X.z << endl;
