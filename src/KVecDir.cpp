@@ -120,8 +120,9 @@ namespace DDG{
       // Going over every face and averaging the complex number based on the areas 
       HalfEdgeIter he = vi->he->next;
       VertexIter initialVertexIter = he->vertex;
-      VertexIter curVertexIter;
       Complex vertexQ;
+      bool isOutsideNRing = false;
+      double sumFaceAreas = 0.0;
       do{
           FaceIter fi = he->face;
           HalfEdgeIter heToCompare = he->next->next;
@@ -129,33 +130,37 @@ namespace DDG{
           {
             Vector faceAliVec = fi->alignment.unit();
 
-            if (!dot(faceAliVec, fi->normal) == 0){
-              Vector f = faceAliVec;
-              Vector N = fi->normal;
+            // if (!dot(faceAliVec, fi->normal) == 0){
+            //   std::cout << dot(faceAliVec, fi->normal) << std::endl;
+            //   Vector f = faceAliVec;
+            //   Vector N = fi->normal;
 
-              Vector fProj = f;
-              if (dot(f,N) > 0) fProj = (f/dot(f,N)) - N;
-              else if (dot(f,N) < 0) fProj = N - (f/dot(f,N));
+            //   Vector fProj = f;
+            //   if (dot(f,N) > 0) fProj = (f/dot(f,N)) - N;
+            //   else if (dot(f,N) < 0) fProj = N - (f/dot(f,N));
 
-              faceAliVec = fProj.unit();
-            }
+            //   faceAliVec = fProj.unit();
+            // }
 
             // std::cout << dot(faceAliVec, fi->normal) << std::endl;
             // assert(dot(faceAliVec, fi->normal) == 0);
             Vector heVec = heToCompare->geom().unit();
 
-           Vector crosprod = cross(heVec, faceAliVec);
+            Vector crosprod = cross(heVec, faceAliVec);
             Complex heToAlignment = Phase(vi->s*asin(crosprod.norm()));
             if (signbit(dot(crosprod, fi->normal)))
               heToAlignment = heToAlignment*Phase(M_PI);
             Complex curComplex = heToAlignment*Phase(vi->AngleOfEdge(heToCompare));
-
+            sumFaceAreas += fi->area();
             vertexQ += fi->area()*curComplex;
+          }
+          else
+          {
+            isOutsideNRing = true;
           }
 
           he = he->next->flip->next;
-          curVertexIter = he->vertex;
-      }while(curVertexIter != initialVertexIter);
+      }while(he->vertex != initialVertexIter);
       // if (vi->alignment.norm() == 0)
       // {
       //   vi->q = Complex(0.0, 0.0);
@@ -170,8 +175,16 @@ namespace DDG{
       // // double v_proj_norm = v_proj.norm();
       // // v_proj_norm = v_proj_norm != 0 ? v_proj_norm : 1;  
       // vi->q = Complex(dot(v_proj, t1), dot(v_proj, t2));
-      vi->q = vertexQ.unit()*100000;
       // vi->q = vi->q.unit()*100000;
+      
+      if (isOutsideNRing)
+      {
+        vi->q = Complex(0.0, 0.0);
+      }
+      else
+      {
+        vi->q = vertexQ/sumFaceAreas;
+      }
     }
   }
 
