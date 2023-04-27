@@ -552,12 +552,14 @@ namespace DDG
          const Vector e1 = vi->Xvector(); // bases for tangent plane
          const Vector e2 = cross( N, e1 );
 
+         const Vector e3 = cross( e2, N );
+
          const double theta = vi->u.arg();
 
          for( int i = 0; i < fieldDegree; i++ )
          {
             const double phi = i*2.*pi/fieldDegree + theta;
-            const Vector L = scale * vi->u.norm() * ( cos(phi)*e1 + sin(phi)*e2 );
+            const Vector L = scale * vi->u.norm() * ( cos(phi)*e3 + sin(phi)*e2 );
 
             glVertex3dv( &c[0] );
             glVertex3dv( &(c+L)[0] );
