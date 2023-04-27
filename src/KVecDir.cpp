@@ -123,8 +123,6 @@ namespace DDG{
       VertexIter curVertexIter;
       Complex vertexQ;
       do{
-          curVertexIter = he->vertex;
-
           FaceIter fi = he->face;
           HalfEdgeIter heToCompare = he->next->next;
           if (fi->alignment.norm() != 0)
@@ -172,7 +170,7 @@ namespace DDG{
       // // double v_proj_norm = v_proj.norm();
       // // v_proj_norm = v_proj_norm != 0 ? v_proj_norm : 1;  
       // vi->q = Complex(dot(v_proj, t1), dot(v_proj, t2));
-      vi->q = vertexQ.unit();
+      vi->q = vertexQ.unit()*100000;
       // vi->q = vi->q.unit()*100000;
     }
   }
