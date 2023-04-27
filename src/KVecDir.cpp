@@ -116,21 +116,64 @@ namespace DDG{
 
   void Mesh::setupqForGivenVectorAlignment( void ){
     for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ ){
-      if (vi->alignment.norm() == 0)
-      {
-        vi->q = Complex(0.0, 0.0);
-        continue;
-      }
 
-      const Vector n = vi->normal.unit();
-      const Vector t1 = vi->Xvector().unit();
-      const Vector t2 = cross( n, t1 );
-      const Vector v = vi->alignment.unit();
-      const Vector v_proj = v - dot(v, n) * n / dot(n, n);
-      // double v_proj_norm = v_proj.norm();
-      // v_proj_norm = v_proj_norm != 0 ? v_proj_norm : 1;  
-      vi->q = Complex(dot(v_proj, t1), dot(v_proj, t2));
-      vi->q = vi->q.unit()*100000;
+      // Going over every face and averaging the complex number based on the areas 
+      HalfEdgeIter he = vi->he->next;
+      VertexIter initialVertexIter = he->vertex;
+      VertexIter curVertexIter;
+      Complex vertexQ;
+      do{
+          curVertexIter = he->vertex;
+
+          FaceIter fi = he->face;
+          HalfEdgeIter heToCompare = he->next->next;
+          if (fi->alignment.norm() != 0)
+          {
+            Vector faceAliVec = fi->alignment.unit();
+
+            if (!dot(faceAliVec, fi->normal) == 0){
+              Vector f = faceAliVec;
+              Vector N = fi->normal;
+
+              Vector fProj = f;
+              if (dot(f,N) > 0) fProj = (f/dot(f,N)) - N;
+              else if (dot(f,N) < 0) fProj = N - (f/dot(f,N));
+
+              faceAliVec = fProj.unit();
+            }
+
+            // std::cout << dot(faceAliVec, fi->normal) << std::endl;
+            // assert(dot(faceAliVec, fi->normal) == 0);
+            Vector heVec = heToCompare->geom().unit();
+
+           Vector crosprod = cross(heVec, faceAliVec);
+            Complex heToAlignment = Phase(vi->s*asin(crosprod.norm()));
+            if (signbit(dot(crosprod, fi->normal)))
+              heToAlignment = heToAlignment*Phase(M_PI);
+            Complex curComplex = heToAlignment*Phase(vi->AngleOfEdge(heToCompare));
+
+            vertexQ += fi->area()*curComplex;
+          }
+
+          he = he->next->flip->next;
+          curVertexIter = he->vertex;
+      }while(curVertexIter != initialVertexIter);
+      // if (vi->alignment.norm() == 0)
+      // {
+      //   vi->q = Complex(0.0, 0.0);
+      //   continue;
+      // }
+
+      // const Vector n = vi->normal.unit();
+      // const Vector t1 = vi->Xvector().unit();
+      // const Vector t2 = cross( n, t1 );
+      // const Vector v = vi->alignment.unit();
+      // const Vector v_proj = v - dot(v, n) * n / dot(n, n);
+      // // double v_proj_norm = v_proj.norm();
+      // // v_proj_norm = v_proj_norm != 0 ? v_proj_norm : 1;  
+      // vi->q = Complex(dot(v_proj, t1), dot(v_proj, t2));
+      vi->q = vertexQ.unit();
+      // vi->q = vi->q.unit()*100000;
     }
   }
 
