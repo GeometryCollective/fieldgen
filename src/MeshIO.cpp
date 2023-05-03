@@ -53,7 +53,7 @@ namespace DDG
       out << "# of the n possible vectors.  The other vectors can be obtained" << endl;
       out << "# by rotating this one around the corresponding  vertex normal," << endl;
       out << "# which is given in the usual vn line.  Singularities in the" << endl;
-      out << "# field, which are associated with faces, are indicated by lines" << endl;
+      out << "#field, which are associated with faces, are indicated by lines" << endl;
       out << "#" << endl;
       out << "#    singularity i s" << endl;
       out << "#" << endl;
@@ -131,7 +131,7 @@ namespace DDG
          const Vector X = cos(theta)*e3 + sin(theta)*e2;
 
          int i = vertexIndex[v];
-         out << "# field " << i << " " << X.x << " " << X.y << " " << X.z << endl;
+         out << "#field " << i << " " << X.x << " " << X.y << " " << X.z << endl;
       }
 
       int p = 1;
