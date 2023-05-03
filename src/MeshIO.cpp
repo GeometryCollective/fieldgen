@@ -117,7 +117,7 @@ namespace DDG
          out << endl;
       }
 
-      out << "# degree " << n << endl;
+      out << "#degree " << n << endl;
 
       for( VertexCIter v = mesh.vertices.begin(); v != mesh.vertices.end(); v++ )
       {
@@ -142,7 +142,7 @@ namespace DDG
          if( f->isBoundary() ) continue;
          if( f->sing != 0 )
          {
-            out << "# singularity " << p << " " << (double)f->sing/(double)n << endl;
+            out << "#singularity " << p << " " << (double)f->sing/(double)n << endl;
          }
          p++;
       }
