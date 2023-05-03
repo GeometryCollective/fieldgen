@@ -93,8 +93,8 @@ int main( int argc, char** argv )
    if( alignToCurvature )
    {
       mesh.SmoothestCurvatureAlignment( degree, s, t, true );
-   }
-   if( alignToGivenField )
+   } 
+   else if( alignToGivenField )
    {
       mesh.SmoothestGivenVectorAlignment( degree, s, t, true );
    }
