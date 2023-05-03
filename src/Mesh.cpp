@@ -135,30 +135,30 @@ namespace DDG
 
    void Mesh::normalize( void )
    {
-      // // compute center of mass
-      // Vector c( 0., 0., 0. );
-      // for( VertexCIter v = vertices.begin(); v != vertices.end(); v++ )
-      // {
-      //    c += v->position;
-      // }
-      // c /= (double) vertices.size();
+      // compute center of mass
+      Vector c( 0., 0., 0. );
+      for( VertexCIter v = vertices.begin(); v != vertices.end(); v++ )
+      {
+         c += v->position;
+      }
+      c /= (double) vertices.size();
 
-      // // translate to origin
-      // for( VertexIter v = vertices.begin(); v != vertices.end(); v++ )
-      // {
-      //    v->position -= c;
-      // }
+      // translate to origin
+      for( VertexIter v = vertices.begin(); v != vertices.end(); v++ )
+      {
+         v->position -= c;
+      }
 
-      // // rescale such that the mesh sits inside the unit ball
-      // double rMax = 0.;
-      // for( VertexCIter v = vertices.begin(); v != vertices.end(); v++ )
-      // {
-      //    rMax = max( rMax, v->position.norm() );
-      // }
-      // for( VertexIter v = vertices.begin(); v != vertices.end(); v++ )
-      // {
-      //    v->position /= rMax;
-      // }
+      // rescale such that the mesh sits inside the unit ball
+      double rMax = 0.;
+      for( VertexCIter v = vertices.begin(); v != vertices.end(); v++ )
+      {
+         rMax = max( rMax, v->position.norm() );
+      }
+      for( VertexIter v = vertices.begin(); v != vertices.end(); v++ )
+      {
+         v->position /= rMax;
+      }
    }
 
    // maximum distance from any vertex to the mesh centroid

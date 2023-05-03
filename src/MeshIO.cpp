@@ -143,7 +143,7 @@ namespace DDG
          if( f->sing != 0 )
          {
             // out << "#singularity " << p << " " << (double)f->sing/(double)n << endl;
-             out << "#singularity " << p << " " << (double)f->sing << endl;
+             out << "#singularity " << p << " " << (double)f->sing/(double)n << endl;
          }
          p++;
       }
