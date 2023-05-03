@@ -54,7 +54,7 @@ void parseArgs(int argc, char *argv[], std::string& inputPath, std::string& outp
       std::string sStr, tStr;
 
       for (int i = 3; i < argc; i++) {
-         if (parseArg(argv[i], "--degree=", degreeStr)) degree = std::stoi(degreeStr);
+         if (parseArg(argv[i], "--degree=", degreeStr)) degree = atoi(degreeStr.c_str());
          if (doesArgExist(argv[i], "--alignToCurvature")) alignToCurvature = true;
          if (doesArgExist(argv[i], "--alignToBoundary")) alignToBoundary = true;
          if (doesArgExist(argv[i], "--alignToGivenField")) alignToGivenField = true;
