@@ -523,7 +523,7 @@ namespace DDG{
   }
 
   // alignment with q. q will be recalculated
-  double Mesh::SmoothestGivenVectorAlignment( unsigned int n, double s, double lambda, bool dir ){
+  double Mesh::SmoothestGivenVectorAlignment( unsigned int n, double s, double lambda, double alignmentMagnitude, bool dir ){
     cerr << "Mesh::SmoothestGivenVectorAlignment: n: " << n << " s: " << s << " lambda: " << lambda << endl;
     if( n != 1 && n != 2 && n != 4){
       cerr << "alignment code requires n == 1, 2 or 4; n is: " << n << endl;
@@ -546,15 +546,15 @@ namespace DDG{
     for( VertexIter vi = vertices.begin(); vi != vertices.end(); i++, vi++ ){
       if (n == 1)
       {
-        q(vi->id,0) = vi -> q;
+        q(vi->id,0) = vi -> q * alignmentMagnitude;
       }
       else if (n == 2)
       {
-        q(vi->id,0) = vi -> q * vi->q;
+        q(vi->id,0) = vi -> q * vi->q * alignmentMagnitude;
       }
       else if (n == 4)
       {
-        q(vi->id,0) = vi -> q * vi -> q * vi -> q * vi -> q;
+        q(vi->id,0) = vi -> q * vi -> q * vi -> q * vi -> q * alignmentMagnitude;
       }
     }
 

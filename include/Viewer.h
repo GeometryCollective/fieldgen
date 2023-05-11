@@ -137,6 +137,7 @@ namespace DDG
          static bool showInputField; // shows user inputted vector alignment fields
          static double t;         // amount of alignment
          static double s;         // determines smoothness energy (between -1,1)
+         static double alignmentMagnitude;// alignment magnitude at a point
    };
 }
 

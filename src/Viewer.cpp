@@ -31,6 +31,7 @@ namespace DDG
    bool Viewer::fixBoundary = false;
    double Viewer::t = 0.;
    double Viewer::s = 0.;
+   double Viewer::alignmentMagnitude = 1.0;
    
    void Viewer :: init( void )
    {
@@ -180,7 +181,7 @@ namespace DDG
       }
       else if( alignToGivenField )
       {
-         mesh.SmoothestGivenVectorAlignment( fieldDegree, s, t, true );
+         mesh.SmoothestGivenVectorAlignment( fieldDegree, s, t, alignmentMagnitude, true );
       }
       else if( fixBoundary )
       {
@@ -326,10 +327,16 @@ namespace DDG
             s = max( -1.+1e-7, min( 1.-1e-7, s ));
             break;
          case 't':
-            t += 5;
+            t *= 10;
             break;
          case 'T':
-            t -= 5;
+            t /= 10;
+            break;
+         case 'a':
+            alignmentMagnitude *= 10;
+            break;
+         case 'A':
+            alignmentMagnitude /= 10;
             break;
          case 'm':
             mSmoothShaded();
@@ -836,6 +843,14 @@ namespace DDG
       {
          stringstream ss;
          ss << "t: " << t;
+         drawString( ss.str(), 16, H-h );
+         h += hInc;
+      }
+
+      // display alignment magnitude
+      {
+         stringstream ss;
+         ss << "alignment magnitude: " << alignmentMagnitude;
          drawString( ss.str(), 16, H-h );
          h += hInc;
       }

@@ -101,7 +101,7 @@ namespace DDG
     double SmoothestCurvatureAlignment( const unsigned int n, const double s,
 					const double lambda, const bool dir );
     double SmoothestGivenVectorAlignment( const unsigned int n, const double s,
-          const double lambda, const bool dir );
+          const double lambda, const double alignmentMagnitude, const bool dir );
     void ComputeInputVectorFields( void );
     // setup q for givenVectorAlignment
     void setupqForGivenVectorAlignment( void );
