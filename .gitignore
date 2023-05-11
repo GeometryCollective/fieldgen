@@ -1,5 +1,4 @@
 obj/
 .*.sw*
-fieldgen
 .viewer_state.txt
 out.obj
