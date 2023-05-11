@@ -114,7 +114,7 @@ namespace DDG{
     ComputeConnectionAndHopf();
   }
 
-  void Mesh::setupqForGivenVectorAlignment( void ){
+  void Mesh::setupqForGivenVectorAlignment( double alignmentMagnitude ){
     for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ ){
 
       // Going over every face and averaging the complex number based on the areas 
@@ -183,7 +183,7 @@ namespace DDG{
       }
       else
       {
-        vi->q = vertexQ/sumFaceAreas;
+        vi->q = vertexQ*alignmentMagnitude/sumFaceAreas;
       }
     }
   }
@@ -539,22 +539,22 @@ namespace DDG{
     // find solution to Poisson problem
     DenseMatrix<Complex> u(nv,1), q(nv,1);
 
-    setupqForGivenVectorAlignment();
+    setupqForGivenVectorAlignment(alignmentMagnitude);
 
     // load q; to simplify the t computation we need to normalize q
     unsigned int i = 0;
     for( VertexIter vi = vertices.begin(); vi != vertices.end(); i++, vi++ ){
       if (n == 1)
       {
-        q(vi->id,0) = vi -> q * alignmentMagnitude;
+        q(vi->id,0) = vi -> q;
       }
       else if (n == 2)
       {
-        q(vi->id,0) = vi -> q * vi->q * alignmentMagnitude;
+        q(vi->id,0) = vi -> q * vi->q;
       }
       else if (n == 4)
       {
-        q(vi->id,0) = vi -> q * vi -> q * vi -> q * vi -> q * alignmentMagnitude;
+        q(vi->id,0) = vi -> q * vi -> q * vi -> q * vi -> q;
       }
     }
 
@@ -591,7 +591,7 @@ namespace DDG{
 
   // converts u to given alingment fields
   void Mesh::ComputeInputVectorFields( void ){
-    setupqForGivenVectorAlignment();
+    setupqForGivenVectorAlignment(1);
     for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ ){
       vi->u = vi->q;
       if (vi->u.norm() != 0)

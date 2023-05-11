@@ -104,7 +104,7 @@ namespace DDG
           const double lambda, const double alignmentMagnitude, const bool dir );
     void ComputeInputVectorFields( void );
     // setup q for givenVectorAlignment
-    void setupqForGivenVectorAlignment( void );
+    void setupqForGivenVectorAlignment( double alignmentMagnitude );
 
     // computes energy and mass matrices into the mesh to then be
     // loaded later into the global matrix; gets called by
