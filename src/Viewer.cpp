@@ -327,10 +327,10 @@ namespace DDG
             s = max( -1.+1e-7, min( 1.-1e-7, s ));
             break;
          case 't':
-            t *= 10;
+            t += 100;
             break;
          case 'T':
-            t /= 10;
+            t -= 100;
             break;
          case 'a':
             alignmentMagnitude *= 10;
