@@ -81,10 +81,10 @@ int main( int argc, char** argv )
    int degree = 1;
    bool alignToCurvature = false;
    bool alignToBoundary = false;
-   bool alignToGivenField = false;
+   bool alignToGivenField = false; // the parameter to be passed when to turn on given alignment
    double s = 0.;
    double t = 0.;
-   double alignmentMagnitude = 1.0;
+   double alignmentMagnitude = 1.0; // not being used right now
    parseArgs( argc, argv, inputPath, outputPath, degree, alignToCurvature, alignToBoundary, alignToGivenField, s, t, alignmentMagnitude );
 
    Mesh mesh;
