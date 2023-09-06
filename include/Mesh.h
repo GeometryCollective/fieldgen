@@ -100,6 +100,11 @@ namespace DDG
     // solver function when using alignment energy
     double SmoothestCurvatureAlignment( const unsigned int n, const double s,
 					const double lambda, const bool dir );
+    double SmoothestGivenVectorAlignment( const unsigned int n, const double s,
+          const double lambda, const double alignmentMagnitude, const bool dir );
+    void ComputeInputVectorFields( void );
+    // setup q for givenVectorAlignment
+    void setupqForGivenVectorAlignment( double alignmentMagnitude );
 
     // computes energy and mass matrices into the mesh to then be
     // loaded later into the global matrix; gets called by

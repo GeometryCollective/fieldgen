@@ -17,8 +17,10 @@ void printUsage(const std::string& programName)
              << "[--degree=n] "
              << "[--alignToCurvature] "
              << "[--alignToBoundary] "
+             << "[--alignToGivenField] "
              << "[--s=S] "
              << "[--t=T]"
+             << "[--alignmentMagnitude=alignmentMagnitude]"
              << std::endl;
 }
 
@@ -38,7 +40,8 @@ bool parseArg(const std::string& arg, const std::string& searchStr, std::string&
 }
 
 void parseArgs(int argc, char *argv[], std::string& inputPath, std::string& outputPath,
-      int& degree, bool& alignToCurvature, bool& alignToBoundary, double& s, double& t)
+      int& degree, bool& alignToCurvature, bool& alignToBoundary, bool& alignToGivenField,
+      double& s, double& t, double& alignmentMagnitude)
 {
    if (argc < 3) {
       // input and/or output path not specified
@@ -50,14 +53,17 @@ void parseArgs(int argc, char *argv[], std::string& inputPath, std::string& outp
       inputPath = argv[1];
       outputPath = argv[2];
       std::string degreeStr;
-      std::string sStr, tStr;
+      std::string sStr, tStr, alignmentMagnitudeStr;
 
       for (int i = 3; i < argc; i++) {
-         if (parseArg(argv[i], "--degree=", degreeStr)) degree = std::stoi(degreeStr);
+         if (parseArg(argv[i], "--degree=", degreeStr)) degree = atoi(degreeStr.c_str());
          if (doesArgExist(argv[i], "--alignToCurvature")) alignToCurvature = true;
          if (doesArgExist(argv[i], "--alignToBoundary")) alignToBoundary = true;
+         if (doesArgExist(argv[i], "--alignToGivenField")) alignToGivenField = true;
          if (parseArg(argv[i], "--s=", sStr)) s = std::atof(sStr.c_str());
          if (parseArg(argv[i], "--t=", tStr)) t = std::atof(tStr.c_str());
+         if (parseArg(argv[i], "--alignmentMagnitude=", alignmentMagnitudeStr))
+            alignmentMagnitude = std::atof(alignmentMagnitudeStr.c_str());
       }
    }
 
@@ -75,9 +81,11 @@ int main( int argc, char** argv )
    int degree = 1;
    bool alignToCurvature = false;
    bool alignToBoundary = false;
+   bool alignToGivenField = false; // the parameter to be passed when to turn on given alignment
    double s = 0.;
    double t = 0.;
-   parseArgs( argc, argv, inputPath, outputPath, degree, alignToCurvature, alignToBoundary, s, t );
+   double alignmentMagnitude = 1.0; // not being used right now
+   parseArgs( argc, argv, inputPath, outputPath, degree, alignToCurvature, alignToBoundary, alignToGivenField, s, t, alignmentMagnitude );
 
    Mesh mesh;
 
@@ -90,6 +98,10 @@ int main( int argc, char** argv )
    if( alignToCurvature )
    {
       mesh.SmoothestCurvatureAlignment( degree, s, t, true );
+   } 
+   else if( alignToGivenField )
+   {
+      mesh.SmoothestGivenVectorAlignment( degree, s, t, alignmentMagnitude, true );
    }
    else if( alignToBoundary )
    {

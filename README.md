@@ -72,6 +72,9 @@ have been set, simply type
 
    ```make```
 
+build on WSL using the following: 
+   ``` CMAKE_OPTIONS="-DBLAS_LIBRARIES=/usr/lib/x86_64-linux-gnu/libblas.so -DLAPACK_LIBRARIES=/usr/lib/x86_64-linux-gnu/liblapack.so -DUMFPACK_LIBRARIES=/usr/local/lib/libumfpack.so" make -j8 all -lGL -lGLU -lglut -lspqr -lcholmod -lmetis -lcolamd -lccolamd -lcamd -lamd -lm -llapack -lblas -lgfortran -lumfpack ```
+
 which (barring any compilation/linker errors) should build an executable
 called `fieldviz`.
 
@@ -102,7 +105,7 @@ Other commands can be accessed via the keyboard:
 |      `f` | draw faceted (with wireframe)
 |      `*` | show/hide singularities
 |      `w` | write solution to `out.obj`
-|  `` ` `` | take a screenshot
+|  `` ` `` | take a screenshot 
 | `escape` | exit
 
 **Note:** curvature alignment works only when the symmetry degree of the field is 2 or 4.

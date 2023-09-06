@@ -20,8 +20,9 @@
 
 #ifndef DDG_SHADER_H
 #define DDG_SHADER_H
+#define GL_GLEXT_PROTOTYPES
 
-#include <GLUT/glut.h>
+#include <GL/freeglut.h>
 #include <string>
 
 namespace DDG

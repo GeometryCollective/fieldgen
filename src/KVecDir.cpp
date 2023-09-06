@@ -19,6 +19,21 @@ namespace DDG{
     return atan2( dot(cross(f, t), N), dot(f, t) );
   }
 
+  // f and t are projected onto plane normal to N as fProj and tProj. Returns angle from fProj to tProj
+  inline const double ProjectionAngle( const Vector& f, const Vector& t, const Vector& N ){
+    if (dot(f, N) == 0 || dot(t, N) == 0) return 0;
+
+    Vector fProj = f;
+    if (dot(f,N) > 0) fProj = (f/dot(f,N)) - N;
+    else if (dot(f,N) < 0) fProj = N - (f/dot(f,N));
+    
+    Vector tProj = t;
+    if (dot(t,N) > 0) tProj = (t/dot(t,N)) - N;
+    else if (dot(t,N) < 0) tProj = N - (t/dot(t,N));
+
+    return acos(dot(fProj.unit(), tProj.unit()));
+  }
+
   inline const double Clip( const double value, const double lower, const double upper ){
     return value < lower ? lower : ( value > upper ? upper : value );
   }
@@ -56,7 +71,7 @@ namespace DDG{
 	// in the edge tangent space (distinguished direction is along edge) q is purely real
 	// ei->q = -Complex(acos(cs)/2*le,0);
 	ei->q = -Complex(Angle( ei->he->face->normal, ei->he->flip->face->normal, ei->he->geom().unit() )/2*le,0);
-	// just making sure...
+	// just making sure... 
 	assert( !isnan(ei->q.re) );
       }
 
@@ -97,6 +112,63 @@ namespace DDG{
     
     // assumes alpha angles and s scalings at vertices
     ComputeConnectionAndHopf();
+  }
+
+  /*
+    This is the function that changes the the values of q to the area weighted 
+    averaged of complex representations of face vectors
+  */
+  void Mesh::setupqForGivenVectorAlignment( double alignmentMagnitude ){
+    for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ ){
+
+      // Going over every face and averaging the complex number based on the areas 
+      HalfEdgeIter he = vi->he->next;
+      VertexIter initialVertexIter = he->vertex;
+      Complex vertexQ; // The variable that saves averaged face complex values
+      bool isOutsideNRing = false;
+      double sumFaceAreas = 0.0;
+      do{
+          FaceIter fi = he->face;
+          HalfEdgeIter heToCompare = he->next->next;
+          if (fi->alignment.norm() != 0)
+          {
+            Vector faceAliVec = fi->alignment.unit();
+
+            Vector heVec = heToCompare->geom().unit();
+
+            Vector crosprod = cross(heVec, faceAliVec);
+            // heToAlignment saved the complex rotation from edge vector of the face to the face based vector
+            Complex heToAlignment = Phase(vi->s*asin(crosprod.norm()));
+            // If the edge is on the different side of the edge we should rotate it by pi radians
+            // We do so because the angle with the edge should be in clockwise direction to represent the complexnumber correctly 
+            if (signbit(dot(crosprod, fi->normal)))
+              heToAlignment = heToAlignment*Phase(M_PI);
+            // here we multiply complex rotation on the face to complex representation of the edge to the basis vector
+            // That one is given by the fuction Vertex::AngleOfEdge(HalfEdge)
+            Complex curComplex = heToAlignment*Phase(vi->AngleOfEdge(heToCompare));
+            sumFaceAreas += fi->area();
+            vertexQ += fi->area()*curComplex;
+          }
+          else
+          {
+            isOutsideNRing = true;
+          }
+
+          he = he->next->flip->next;
+      }while(he->vertex != initialVertexIter);
+      
+      if (isOutsideNRing)
+      {
+        vi->q = Complex(0.0, 0.0); // If it's outside the n rings of the alignnent make it 0
+      }
+      else
+      {
+        // alignmentMagnitude is an experimental parameter which section 5 of the paper says
+        // if more the alignment energy at that point will be more. But it's not being used
+        // currently
+        vi->q = vertexQ*alignmentMagnitude/sumFaceAreas;
+      }
+    }
   }
 
   void Mesh::ComputeEnergyAndMass( const unsigned int n, const double s ){
@@ -194,6 +266,7 @@ namespace DDG{
       Mj.push_back( ColumnEntry( j, Complex(vj->m,0) ));
 
       HalfEdgeCIter he = vj->he;
+
       do {
         EdgeCIter e = he->edge;
         VertexIter vi = he->flip->vertex;
@@ -201,6 +274,7 @@ namespace DDG{
 
         Complex Aij = e->Es + shift*e->m;
         Complex Mij = e->m;
+
         if( he->edge->he == he ){
           Aij = Aij.conj();
           Mij = Mij.conj();
@@ -213,7 +287,7 @@ namespace DDG{
       } while( he != vj->he );
     }
 
-    for( int j = 0; j < nV; j++ )
+    for( unsigned int j = 0; j < nV; j++ )
     {
        A.appendCompressedColumn( cA[j] );
        M.appendCompressedColumn( cM[j] );
@@ -284,7 +358,7 @@ namespace DDG{
        } while( he != vj->he );
     }
 
-    for( int j = 0; j < nV; j++ )
+    for( unsigned int j = 0; j < nV; j++ )
     {
        A.appendCompressedColumn( cA[j] );
        M.appendCompressedColumn( cM[j] );
@@ -429,6 +503,89 @@ namespace DDG{
     // let the caller know what the actual t value was
     cerr << "corresponding t value: " << 1./(1.+normU) << endl;
     return 1./(1.+normU);
+  }
+
+  // alignment with q. q will be recalculated
+  double Mesh::SmoothestGivenVectorAlignment( unsigned int n, double s, double lambda, double alignmentMagnitude, bool dir ){
+    cerr << "Mesh::SmoothestGivenVectorAlignment: n: " << n << " s: " << s << " lambda: " << lambda << endl;
+    if( n != 1 && n != 2 && n != 4){
+      cerr << "alignment code requires n == 1, 2 or 4; n is: " << n << endl;
+      return 0;
+    }
+    double t0 = wallClock();
+
+    const unsigned int nv = vertices.size();
+    SparseMatrix<Complex> A( nv, nv ), M( nv, nv );
+
+    SetupEnergyMatrix( A, M, n, s, lambda ); 
+    // A is now A-lambdaM
+
+    // find solution to Poisson problem
+    DenseMatrix<Complex> u(nv,1), q(nv,1);
+
+    setupqForGivenVectorAlignment(alignmentMagnitude);
+
+    // load q; to simplify the t computation we need to normalize q
+    unsigned int i = 0;
+    for( VertexIter vi = vertices.begin(); vi != vertices.end(); i++, vi++ ){
+      if (n == 1)
+      {
+        q(vi->id,0) = vi -> q;
+      }
+      else if (n == 2)
+      {
+        q(vi->id,0) = vi -> q * vi->q; // raise it to the power of 2 to solve for line fields
+      }
+      else if (n == 4)
+      {
+        q(vi->id,0) = vi -> q * vi -> q * vi -> q * vi -> q; // raise it to the power of 4 to solve for cross fields
+      }
+    }
+
+    q = M.multiply( q ); // q is now Mq
+    double normQ = 0;
+    for( i = 0; i < nv; i++ ) normQ += q(i,0).norm2();
+    normQ = sqrt(normQ);
+    q = q/normQ;
+
+    solvePositiveDefinite( A, u, q ); // Solves the equation Au=q into u
+
+    double normU = 0;
+    for( i = 0; i < nv; i++ ) normU += u(i,0).norm2();
+    normU = sqrt( normU );
+    u = u/normU;
+
+    // load result
+    i = 0; for( VertexIter vi = vertices.begin(); vi != vertices.end(); i++, vi++ ) vi->u = u(vi->id,0);
+
+    ComputeIndices( n ); // computes the singularities
+
+    // take roots (and possibly normalize) vertex data to get all the n-vectors (line fields and cross fields)
+    for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ ){
+      const Complex z = vi->u;
+      vi->u = Phase(z.arg()/n) * ( dir ? 1. : pow(z.norm(),1./n) );
+    }
+    double t1 = wallClock(); printTiming( "compute aligned field", t1-t0 );
+    cerr << "triangles: " << faces.size() << endl;
+
+    // let the caller know what the actual t value was
+    cerr << "corresponding t value: " << 1./(1.+normU) << endl;
+    return 1./(1.+normU);
+  }
+
+  // converts u to given alingment fields so that we can show just the alignments
+  // if someone wants to see
+  void Mesh::ComputeInputVectorFields( void ){
+    setupqForGivenVectorAlignment(1);
+    for( VertexIter vi = vertices.begin(); vi != vertices.end(); vi++ ){
+      vi->u = vi->q;
+      if (vi->u.norm() != 0)
+      {
+        vi->u = vi->u.unit();
+      }
+      
+    }
+    return;
   }
 
   // determine singularity index of each triangle

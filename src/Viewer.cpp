@@ -26,9 +26,12 @@ namespace DDG
    Shader Viewer::shader;
    int Viewer::fieldDegree = 1;
    bool Viewer::align = false;
+   bool Viewer::alignToGivenField = false;
+   bool Viewer::showInputField = false;
    bool Viewer::fixBoundary = false;
    double Viewer::t = 0.;
    double Viewer::s = 0.;
+   double Viewer::alignmentMagnitude = 1.0;
    
    void Viewer :: init( void )
    {
@@ -81,6 +84,8 @@ namespace DDG
       glutSetMenu( mainMenu );
       glutAddMenuEntry( "[u] Smooth Field",          menuSmoothField         );
       glutAddMenuEntry( "[c] Toggle Curvature",      menuToggleAlignment     );
+      glutAddMenuEntry( "[v] Toggle Given field",    menuToggleVecAlignment  );
+      glutAddMenuEntry( "[n] Toggle Input field",    menuToggleInpAlignment  );
       glutAddMenuEntry( "[b] Toggle Fixed Boundary", menuToggleFixedBoundary );
       glutAddMenuEntry( "[r] Reset Mesh",            menuResetMesh           );
       glutAddMenuEntry( "[w] Write Mesh",            menuWriteMesh           );
@@ -119,6 +124,12 @@ namespace DDG
             break;
          case( menuToggleAlignment ):
             mToggleAlignment();
+            break;
+         case( menuToggleVecAlignment ):
+            mToggleGivenAlignment();
+            break;
+         case( menuToggleInpAlignment ):
+            mToggleInputAlignment();
             break;
          case( menuToggleFixedBoundary ):
             mToggleFixedBoundary();
@@ -160,12 +171,7 @@ namespace DDG
    
    void Viewer :: mSmoothField( void )
    {
-      static bool first_call = true;
-      if( first_call )
-      {
-         mesh.InitKVecDirData();
-         first_call = false;
-      }
+      mesh.InitKVecDirData();
 
       mesh.clearSingularities();
 
@@ -173,9 +179,17 @@ namespace DDG
       {
          mesh.SmoothestCurvatureAlignment( fieldDegree, s, t, true );
       }
+      else if( alignToGivenField )
+      {
+         mesh.SmoothestGivenVectorAlignment( fieldDegree, s, t, alignmentMagnitude, true );
+      }
       else if( fixBoundary )
       {
          mesh.ComputeSmoothestFixedBoundary( fieldDegree, s, true );
+      }
+      else if ( showInputField )
+      {
+         mesh.ComputeInputVectorFields();
       }
       else
       {
@@ -207,13 +221,41 @@ namespace DDG
    void Viewer :: mToggleAlignment( void )
    {
       align = !align;
-      if( align ) fixBoundary = false;
+      if( align ){
+         fixBoundary = false;
+         alignToGivenField = false;
+         showInputField = false;
+      }
+   }
+
+   void Viewer :: mToggleGivenAlignment( void )
+   {
+      alignToGivenField = !alignToGivenField;
+      if( alignToGivenField ){
+         fixBoundary = false;
+         align = false;
+         showInputField = false;
+      }
+   }
+
+   void Viewer :: mToggleInputAlignment( void )
+   {
+      showInputField = !showInputField;
+      if( showInputField ){
+         fixBoundary = false;
+         align = false;
+         alignToGivenField = false;
+      }
    }
    
    void Viewer :: mToggleFixedBoundary( void )
    {
       fixBoundary = !fixBoundary;
-      if( fixBoundary ) align = false;
+      if( fixBoundary ){
+         align = false;
+         alignToGivenField = false;
+         showInputField = false;
+      }
    }
    
    void Viewer :: mSmoothShaded( void )
@@ -285,10 +327,16 @@ namespace DDG
             s = max( -1.+1e-7, min( 1.-1e-7, s ));
             break;
          case 't':
-            t += .01;
+            t += 100;
             break;
          case 'T':
-            t -= .01;
+            t -= 100;
+            break;
+         case 'a':
+            alignmentMagnitude *= 10;
+            break;
+         case 'A':
+            alignmentMagnitude /= 10;
             break;
          case 'm':
             mSmoothShaded();
@@ -313,7 +361,13 @@ namespace DDG
 	    break;
          case 'c':
 	    mToggleAlignment();
+       break;
+         case 'v':
+       mToggleGivenAlignment();
 	    break;
+         case 'n':
+       mToggleInputAlignment();
+       break;
          case '*':
 	    mToggleSingularities();
 	    break;
@@ -505,12 +559,14 @@ namespace DDG
          const Vector e1 = vi->Xvector(); // bases for tangent plane
          const Vector e2 = cross( N, e1 );
 
+         const Vector e3 = cross( e2, N );
+
          const double theta = vi->u.arg();
 
          for( int i = 0; i < fieldDegree; i++ )
          {
             const double phi = i*2.*pi/fieldDegree + theta;
-            const Vector L = scale * vi->u.norm() * ( cos(phi)*e1 + sin(phi)*e2 );
+            const Vector L = scale * vi->u.norm() * ( cos(phi)*e3 + sin(phi)*e2 );
 
             glVertex3dv( &c[0] );
             glVertex3dv( &(c+L)[0] );
@@ -750,6 +806,22 @@ namespace DDG
          drawString( ss.str(), 16, H-h );
          h += hInc;
       }
+
+      // display given field alignment
+      {
+         stringstream ss;
+         ss << "given field alignment: " << (alignToGivenField?"on":"off");
+         drawString( ss.str(), 16, H-h );
+         h += hInc;
+      }
+
+      // display input vector field
+      {
+         stringstream ss;
+         ss << "show input field: " << (showInputField?"on":"off");
+         drawString( ss.str(), 16, H-h );
+         h += hInc;
+      }
       
       // display boundary alignment
       {
@@ -771,6 +843,14 @@ namespace DDG
       {
          stringstream ss;
          ss << "t: " << t;
+         drawString( ss.str(), 16, H-h );
+         h += hInc;
+      }
+
+      // display alignment magnitude
+      {
+         stringstream ss;
+         ss << "alignment magnitude: " << alignmentMagnitude;
          drawString( ss.str(), 16, H-h );
          h += hInc;
       }

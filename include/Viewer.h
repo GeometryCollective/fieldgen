@@ -9,9 +9,10 @@
 
 #ifndef DDG_VIEWER_H
 #define DDG_VIEWER_H
+#define GL_GLEXT_PROTOTYPES
 
 #include <string>
-#include <GLUT/glut.h>
+#include <GL/freeglut.h>
 #include "Mesh.h"
 #include "Camera.h"
 #include "Shader.h"
@@ -65,7 +66,9 @@ namespace DDG
          
          // menu functions
 	 static void mSmoothField( void );
-	 static void mToggleAlignment( void );
+    static void mToggleAlignment( void );
+	 static void mToggleGivenAlignment( void );
+    static void mToggleInputAlignment( void );
 	 static void mToggleFixedBoundary( void );
 	 static void mToggleSingularities( void );
 	 static void mToggleHedgehog( void );
@@ -93,6 +96,8 @@ namespace DDG
             menuZoomOut,
             menuScreenshot,
             menuToggleAlignment,
+            menuToggleVecAlignment,
+            menuToggleInpAlignment,
             menuToggleFixedBoundary,
             menuToggleHedgehog,
             menuToggleSingularities
@@ -127,9 +132,12 @@ namespace DDG
          // field parameters
          static int fieldDegree;  // degree k of k-field
          static bool align;       // toggles alignment with curvature
+         static bool alignToGivenField; // toggles alignment with a given alignment field
          static bool fixBoundary; // toggles fixed boundary vectors (Dirichlet conditions)
+         static bool showInputField; // shows user inputted vector alignment fields
          static double t;         // amount of alignment
          static double s;         // determines smoothness energy (between -1,1)
+         static double alignmentMagnitude;// alignment magnitude at a point
    };
 }
 

@@ -53,7 +53,7 @@ namespace DDG
       out << "# of the n possible vectors.  The other vectors can be obtained" << endl;
       out << "# by rotating this one around the corresponding  vertex normal," << endl;
       out << "# which is given in the usual vn line.  Singularities in the" << endl;
-      out << "# field, which are associated with faces, are indicated by lines" << endl;
+      out << "#field, which are associated with faces, are indicated by lines" << endl;
       out << "#" << endl;
       out << "#    singularity i s" << endl;
       out << "#" << endl;
@@ -117,20 +117,21 @@ namespace DDG
          out << endl;
       }
 
-      out << "# degree " << n << endl;
+      out << "#degree " << n << endl;
 
       for( VertexCIter v = mesh.vertices.begin(); v != mesh.vertices.end(); v++ )
       {
-         const Vector c = v->position; // vertex location
+         // const Vector c = v->position; // vertex location
          const Vector N = v->normal; // normal
          const Vector e1 = v->Xvector().unit(); // bases for tangent plane
          const Vector e2 = cross( N, e1 );
+         const Vector e3 = cross( e2, N );
 
          const double theta = v->u.arg();
-         const Vector X = cos(theta)*e1 + sin(theta)*e2;
+         const Vector X = cos(theta)*e3 + sin(theta)*e2;
 
          int i = vertexIndex[v];
-         out << "# field " << i << " " << X.x << " " << X.y << " " << X.z << endl;
+         out << "#field " << i << " " << X.x << " " << X.y << " " << X.z << endl;
       }
 
       int p = 1;
@@ -141,7 +142,8 @@ namespace DDG
          if( f->isBoundary() ) continue;
          if( f->sing != 0 )
          {
-            out << "# singularity " << p << " " << (double)f->sing/(double)n << endl;
+            // out << "#singularity " << p << " " << (double)f->sing/(double)n << endl;
+             out << "#singularity " << p << " " << (double)f->sing/(double)n << endl;
          }
          p++;
       }
@@ -163,6 +165,8 @@ namespace DDG
          if( token == "vt" ) { readTexCoord( ss, data ); continue; } // texture coordinate
          if( token == "vn" ) { readNormal  ( ss, data ); continue; } // vertex normal
          if( token == "f"  ) { readFace    ( ss, data ); continue; } // face
+         if( token == "vf" ) { readAlignment( ss, data ); continue; } // vertex vector alignment
+         if( token == "#attrsf" ) { readFaceAlignment( ss, data ); continue; } // face vector alignment
          if( token[0] == '#' ) continue; // comment
          if( token == "o" ) continue; // object name
          if( token == "g" ) continue; // group name
@@ -235,6 +239,10 @@ namespace DDG
          VertexIter newVertex = mesh.vertices.insert( mesh.vertices.end(), Vertex() );
          newVertex->position = data.positions[ i ];
          newVertex->he = isolated.begin();
+         if (data.alignments.size() != 0)
+         {
+            newVertex->alignment = data.alignments[i];
+         }
          indexToVertex[ i ] = newVertex;
       }
    
@@ -257,6 +265,10 @@ namespace DDG
 
          // create a new face
          FaceIter newFace = mesh.faces.insert( mesh.faces.end(), Face());
+
+         // set the alignmet of the face
+         newFace->alignment = data.alignments[faceIndex];
+
 
          // create a new half edge for each edge of the current face
          vector< HalfEdgeIter > hes( N );
@@ -409,7 +421,25 @@ namespace DDG
    
       data.positions.push_back( Vector( x, y, z ));
    }
+
+   void MeshIO :: readAlignment( stringstream& ss, MeshData& data )
+   {
+      double x, y, z;
    
+      ss >> x >> y >> z;
+   
+      data.alignments.push_back( Vector( x, y, z ));
+   }
+   
+   void MeshIO :: readFaceAlignment( stringstream& ss, MeshData& data )
+   {
+      double x, y, z;
+   
+      ss >> x >> y >> z;
+   
+      data.alignments.push_back( Vector( x, y, z ));
+   }
+
    void MeshIO :: readTexCoord( stringstream& ss, MeshData& data )
    {
       double u, v;
